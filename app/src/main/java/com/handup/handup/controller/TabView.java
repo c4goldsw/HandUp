@@ -1,7 +1,14 @@
 package com.handup.handup.controller;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -16,10 +23,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.handup.handup.R;
 
+/**
+ * I followed
+ * <a href="http://www.androidhive.info/2015/09/android-material-design-working-with-tabs/">
+ * this tutorial</a> and used code from it in order to create the tab views.
+ */
 public class TabView extends AppCompatActivity {
 
     /**
@@ -37,13 +50,29 @@ public class TabView extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    /**
+     * The {@link android.support.design.widget.TabLayout} that will correspond
+     * a particular fragment in the view pager.
+     */
+    private TabLayout tabLayout;
+
+    /**
+     * Used to keep track of the number of tabs
+     */
+    private final int tabCount = 4;
+
+    private int currentTab = 0;
+
+    /**
+     * An array of Drawables containing each icon used in the tabs
+     */
+    Drawable [] icons;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab_view);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -52,18 +81,57 @@ public class TabView extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        final Context c = this;
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                icons[currentTab].setAlpha(77);
+                icons[currentTab].setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                icons[position].setAlpha(255);
+                icons[position].setColorFilter(ContextCompat.getColor(c, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+                currentTab = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
 
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+        setupTabIcons();
     }
 
+    private void setupTabIcons(){
+
+        icons = new Drawable[4];
+
+        icons[0] = ContextCompat.getDrawable(this, R.drawable.ic_stars_24dp);
+        icons[0].setAlpha(255); // set to 255 as this is the initial tab
+        icons[0].setColorFilter(ContextCompat.getColor(this, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+
+        icons[1] = ContextCompat.getDrawable(this, R.drawable.ic_school_24dp);
+        icons[1].setAlpha(77);
+
+        icons[2] = ContextCompat.getDrawable(this, R.drawable.ic_people_24dp);
+        icons[2].setAlpha(77);
+
+        icons[3] = ContextCompat.getDrawable(this, R.drawable.ic_search_24dp);
+        icons[3].setAlpha(77);
+
+        tabLayout.getTabAt(0).setIcon(icons[0]);
+        tabLayout.getTabAt(1).setIcon(icons[1]);
+        tabLayout.getTabAt(2).setIcon(icons[2]);
+        tabLayout.getTabAt(3).setIcon(icons[3]);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -132,29 +200,27 @@ public class TabView extends AppCompatActivity {
             super(fm);
         }
 
+
+        /**
+         * Returns the fragment associated with a particular tab / position.
+         * @param position the requested position
+         * @return the fragment associated with the requested tab / position
+         */
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
+
             return PlaceholderFragment.newInstance(position + 1);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+
+            return tabCount;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-            }
+
             return null;
         }
     }

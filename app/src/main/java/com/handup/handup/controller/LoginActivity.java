@@ -286,6 +286,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     public void returnResponse(String data) {
         if(data.equals(SUCCESSFUL_LOGIN))
+            finish();
             startActivity(new Intent(this, TabView.class));
     }
 
