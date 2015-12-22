@@ -31,9 +31,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.handup.handup.R;
+import com.pearson.pdn.learningstudio.oauth.*;
+import com.pearson.pdn.learningstudio.oauth.config.OAuthConfig;
+import com.pearson.pdn.learningstudio.oauth.request.OAuth2Request;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import helper.Constants;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -319,12 +325,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
 
+            OAuthConfig config = new OAuthConfig();
+            config.setConsumerKey(Constants.TOKEN_KEY);
+            config.setClientString(Constants.CLIENT_STRING);
+            config.setApplicationId(Constants.APPLICATION_ID);
+
+            OAuthServiceFactory oauthFactory = new OAuthServiceFactory(config);
+            OAuth2PasswordService oauthService = oauthFactory.build(OAuth2PasswordService.class);
+
+            //Attempt login
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
+                OAuth2Request response = oauthService.generateOAuth2PasswordRequest(mEmail, mPassword);
+                if(response.getAccessToken().equals(""))
+                    return false;
+
+            } catch (IOException e) {
                 return false;
             }
 
@@ -336,7 +352,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 }
             }
 
-            // TODO: register the new account here.
             return true;
         }
 
