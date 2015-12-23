@@ -1,16 +1,13 @@
 package com.handup.handup.controller;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,10 +20,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.handup.handup.R;
+import com.handup.handup.model.StateManager;
 
 /**
  * I followed
@@ -52,7 +49,7 @@ public class TabView extends AppCompatActivity {
 
     /**
      * The {@link android.support.design.widget.TabLayout} that will correspond
-     * a particular fragment in the view pager.
+     * a particular fragment in the com.handup.handup.view pager.
      */
     private TabLayout tabLayout;
 
@@ -72,6 +69,8 @@ public class TabView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab_view);
+
+        determineState();
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -110,6 +109,35 @@ public class TabView extends AppCompatActivity {
         setupTabIcons();
     }
 
+    /**
+     * As this is the default launch activity, we have to check what the previous state of the
+     * app was.  If the user wasn't logged in, they're sent to the login screen. Otherwise, we
+     * load the app from here
+     */
+    private void determineState(){
+
+        if(!StateManager.firstTimeUsing(this)) {
+            if(StateManager.isLoggedIn(this)){
+
+                StateManager.setFirstTimeToFalse(this);
+                //start the tutorial
+
+            } else {
+                finish();
+                startActivity(new Intent(this, LoginActivity.class));
+            }
+
+        } else {
+            if(!StateManager.isLoggedIn(this)){
+                finish();
+                startActivity(new Intent(this, LoginActivity.class));
+            }
+        }
+    }
+
+    /**
+     * Sets the icons for each tab
+     */
     private void setupTabIcons(){
 
         icons = new Drawable[4];
@@ -156,7 +184,7 @@ public class TabView extends AppCompatActivity {
     }
 
     /**
-     * A placeholder fragment containing a simple view.
+     * A placeholder fragment containing a simple com.handup.handup.view.
      */
     public static class PlaceholderFragment extends Fragment {
         /**
