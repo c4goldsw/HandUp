@@ -9,9 +9,11 @@ import com.pearson.pdn.learningstudio.core.BasicService;
 import com.pearson.pdn.learningstudio.oauth.*;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.handup.handup.helper.Constants;
 import com.pearson.pdn.learningstudio.oauth.config.OAuthConfig;
+import com.pearson.pdn.learningstudio.oauth.request.OAuth2Request;
 
 /**
  * Created by Christopher on 12/23/2015.  Used to manage and persist the state of the app
@@ -34,6 +36,8 @@ public class StateManager {
         //first we check to see if
         if(!file.exists()) {
             createStateFile(file);
+
+            Log.d("StateManager","First Time using");
             return true;
 
         /*Once the user logs in for the first time, the state will eill exist - we need
@@ -43,8 +47,11 @@ public class StateManager {
             try{
                 RandomAccessFile rFile = new RandomAccessFile(file, "r");
                 rFile.seek(0);
-                if (rFile.readBoolean())
+                if (rFile.readBoolean()) {
+
+                    Log.d("StateManager", "First Time using (login complete)");
                     return true;
+                }
 
             }
             catch (IOException e){
@@ -62,10 +69,52 @@ public class StateManager {
     public static void setFirstTimeToFalse(Context c){
         File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
 
+        Log.d("StateManager", "Setting first time to false");
+
         try {
             RandomAccessFile rFile = new RandomAccessFile(file, "rw");
             rFile.seek(0);
             rFile.writeBoolean(false);
+        }
+        catch (IOException e){
+            System.err.println(e);
+        }
+    }
+
+    /**
+     * Gets the expiration time associated with an access token
+     * @param c Context of the app
+     */
+    public static long getExpirtionTime(Context c){
+
+        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
+        long time = 0;
+
+        try {
+            RandomAccessFile rFile = new RandomAccessFile(file, "rw");
+            rFile.seek(302);
+            time = rFile.readLong();
+        }
+        catch (IOException e){
+            System.err.println(e);
+        }
+
+        Log.d("StateManager","Expires in: " + (time - System.currentTimeMillis()));
+        return time;
+    }
+
+    /**
+     * Sets the expiration tiem associated with an access token
+     * @param time
+     */
+    public static void setExpirtionTime(Context c, long time){
+
+        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
+
+        try {
+            RandomAccessFile rFile = new RandomAccessFile(file, "rw");
+            rFile.seek(302);
+            rFile.writeLong(time);
         }
         catch (IOException e){
             System.err.println(e);
@@ -134,16 +183,12 @@ public class StateManager {
 
         String token = getTokens(c)[0];
 
-        OAuthConfig config = new OAuthConfig();
-        config.setConsumerKey(Constants.TOKEN_KEY);
-        config.setClientString(Constants.CLIENT_STRING);
-        config.setApplicationId(Constants.APPLICATION_ID);
+        if(System.currentTimeMillis() > getExpirtionTime(c)) {
+            Log.d("StateManager", "Logged In: false" );
+            return false;
+        }
 
-        OAuthServiceFactory oauthFactory = new OAuthServiceFactory(config);
-        OAuth2PasswordService oauthService = oauthFactory.build(OAuth2PasswordService.class);
-
-        
-
+        Log.d("StateManager", "Logged In: true");
         return true;
     }
 
@@ -152,13 +197,14 @@ public class StateManager {
      *  - 2 bytes for boolean firstTime
      *  - 150 bytes for String accessToken
      *  - 150 bytes for String refresh token
+     *  - 8 bytes for the token expiration time
      * @param f The state file
      */
     public static void createStateFile(File f){
 
         try {
-            RandomAccessFile rFile = new RandomAccessFile(f, "w");
-            rFile.setLength(302);
+            RandomAccessFile rFile = new RandomAccessFile(f, "rw");
+            rFile.setLength(310);
 
             rFile.seek(0);
             rFile.writeBoolean(true); //User is logged in for the first time

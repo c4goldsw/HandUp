@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -299,6 +300,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             //Save all information we need for the user
             StateManager.setTokens(this, new String[] {response.getAccessToken()
                     ,response.getRefreshToken()} );
+            StateManager.setExpirtionTime(this, response.getExpirationTime());
 
             //Start the new activity
             finish();

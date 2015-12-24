@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,7 +57,7 @@ public class TabView extends AppCompatActivity {
     /**
      * Used to keep track of the number of tabs
      */
-    private final int tabCount = 4;
+    private final int tabCount = 5;
 
     private int currentTab = 0;
 
@@ -68,9 +69,10 @@ public class TabView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tab_view);
 
         determineState();
+
+        setContentView(R.layout.activity_tab_view);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -116,19 +118,21 @@ public class TabView extends AppCompatActivity {
      */
     private void determineState(){
 
-        if(!StateManager.firstTimeUsing(this)) {
+        if(StateManager.firstTimeUsing(this)) {
             if(StateManager.isLoggedIn(this)){
 
                 StateManager.setFirstTimeToFalse(this);
                 //start the tutorial
 
             } else {
+
                 finish();
                 startActivity(new Intent(this, LoginActivity.class));
             }
 
         } else {
             if(!StateManager.isLoggedIn(this)){
+                Log.d("StateManager","Regular login");
                 finish();
                 startActivity(new Intent(this, LoginActivity.class));
             }
@@ -140,7 +144,7 @@ public class TabView extends AppCompatActivity {
      */
     private void setupTabIcons(){
 
-        icons = new Drawable[4];
+        icons = new Drawable[tabCount];
 
         icons[0] = ContextCompat.getDrawable(this, R.drawable.ic_stars_24dp);
         icons[0].setAlpha(255); // set to 255 as this is the initial tab
@@ -155,10 +159,14 @@ public class TabView extends AppCompatActivity {
         icons[3] = ContextCompat.getDrawable(this, R.drawable.ic_search_24dp);
         icons[3].setAlpha(77);
 
+        icons[4] = ContextCompat.getDrawable(this, R.drawable.ic_menu_24dp);
+        icons[4].setAlpha(77);
+
         tabLayout.getTabAt(0).setIcon(icons[0]);
         tabLayout.getTabAt(1).setIcon(icons[1]);
         tabLayout.getTabAt(2).setIcon(icons[2]);
         tabLayout.getTabAt(3).setIcon(icons[3]);
+        tabLayout.getTabAt(4).setIcon(icons[4]);
     }
 
     @Override
