@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +25,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.handup.handup.R;
+import com.handup.handup.helper.Constants;
+import com.handup.handup.model.LSQuery;
 import com.handup.handup.model.StateManager;
+import com.pearson.pdn.learningstudio.core.AbstractService;
+import com.pearson.pdn.learningstudio.core.BasicService;
+import com.pearson.pdn.learningstudio.core.Response;
+import com.pearson.pdn.learningstudio.oauth.OAuthServiceFactory;
+import com.pearson.pdn.learningstudio.oauth.config.OAuthConfig;
+
+import java.io.IOException;
 
 /**
  * I followed
@@ -64,18 +74,26 @@ public class TabView extends AppCompatActivity {
     /**
      * An array of Drawables containing each icon used in the tabs
      */
-    Drawable [] icons;
+    private Drawable [] icons;
+
+    /**
+     * Interface for making Learning Studio queries
+     */
+    private LSQuery q;
+
+    static String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-
-        determineState();
-
         setContentView(R.layout.activity_tab_view);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
+        //before loading the main activity, we determine what state the user was last in
+        determineState();
+
+        /* Create the adapter that will return a fragment for each of the three
+         primary sections of the activity. */
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
@@ -109,6 +127,10 @@ public class TabView extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         setupTabIcons();
+
+        name = StateManager.getUserName(this);
+
+        new Query(StateManager.getUserName(this)).execute();
     }
 
     /**
@@ -192,6 +214,64 @@ public class TabView extends AppCompatActivity {
     }
 
     /**
+     * Async task used to make a LS Query
+     */
+    private class Query extends AsyncTask<Void, Void, String>{
+
+        String username;
+
+        public Query(String username){
+            this.username = username;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            String n = "";
+
+            //Test query for user's name
+            OAuthConfig config = new OAuthConfig();
+            config.setApplicationId(Constants.APPLICATION_ID);
+            config.setApplicationName(Constants.APP_NAME);
+            config.setConsumerKey(Constants.TOKEN_KEY);
+            config.setConsumerSecret(Constants.APPLICATION_SECRET);
+            config.setClientString(Constants.CLIENT_STRING);
+
+            OAuthServiceFactory f = new OAuthServiceFactory(config);
+
+            BasicService b = new BasicService(f);
+
+            b.useOAuth2(username);
+
+            Response r = null;
+
+            /*try{
+                r = b.doMethod(AbstractService.HttpMethod.GET, "/me", null);
+            } catch (IOException e){
+                return e.toString();
+            }
+
+            if(r.isError()) {
+                int httpStatusCode = r.getStatusCode();			// 404
+                String httpStatusMessage = r.getStatusMessage();	// Not Found
+
+                System.out.println(httpStatusCode + " " + httpStatusMessage);
+            }
+            else {
+                n = r.getContent();
+            }*/
+
+            return n;
+        }
+
+        @Override
+        protected void onPostExecute(String content){
+
+            //name = content;
+        }
+    }
+
+    /**
      * A placeholder fragment containing a simple com.handup.handup.view.
      */
     public static class PlaceholderFragment extends Fragment {
@@ -221,7 +301,7 @@ public class TabView extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_tab_view, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            textView.setText(name);
             return rootView;
         }
     }

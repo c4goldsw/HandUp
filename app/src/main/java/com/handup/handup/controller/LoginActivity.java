@@ -71,7 +71,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Stores the response of LS after we verify the user exists
      */
-    OAuth2Request response;
+    private OAuth2Request response;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -298,9 +299,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         if(data.equals(SUCCESSFUL_LOGIN))
 
             //Save all information we need for the user
-            StateManager.setTokens(this, new String[] {response.getAccessToken()
-                    ,response.getRefreshToken()} );
-            StateManager.setExpirtionTime(this, response.getExpirationTime());
+            StateManager.setLoggedIn(this, true);
+            StateManager.setUserName(this, userName);
 
             //Start the new activity
             finish();
@@ -355,6 +355,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return false;
             }
 
+            userName = mEmail;
             return true;
         }
 

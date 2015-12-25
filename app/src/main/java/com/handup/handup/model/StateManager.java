@@ -52,7 +52,7 @@ public class StateManager {
                     Log.d("StateManager", "First Time using (login complete)");
                     return true;
                 }
-
+                rFile.close();
             }
             catch (IOException e){
                 System.err.println(e);
@@ -75,6 +75,7 @@ public class StateManager {
             RandomAccessFile rFile = new RandomAccessFile(file, "rw");
             rFile.seek(0);
             rFile.writeBoolean(false);
+            rFile.close();
         }
         catch (IOException e){
             System.err.println(e);
@@ -82,92 +83,44 @@ public class StateManager {
     }
 
     /**
-     * Gets the expiration time associated with an access token
+     * Getter method for active user's username
      * @param c Context of the app
+     * @return Activ user's username
      */
-    public static long getExpirtionTime(Context c){
+    public static String getUserName(Context c){
+
+        byte[] userName = new byte[100];
 
         File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
-        long time = 0;
 
         try {
-            RandomAccessFile rFile = new RandomAccessFile(file, "rw");
-            rFile.seek(302);
-            time = rFile.readLong();
+            RandomAccessFile rFile = new RandomAccessFile(file, "r");
+            rFile.seek(4);
+            rFile.read(userName);
+            rFile.close();
         }
         catch (IOException e){
             System.err.println(e);
         }
 
-        Log.d("StateManager","Expires in: " + (time - System.currentTimeMillis()));
-        return time;
+        return userName.toString();
     }
 
     /**
-     * Sets the expiration tiem associated with an access token
-     * @param time
-     */
-    public static void setExpirtionTime(Context c, long time){
-
-        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
-
-        try {
-            RandomAccessFile rFile = new RandomAccessFile(file, "rw");
-            rFile.seek(302);
-            rFile.writeLong(time);
-        }
-        catch (IOException e){
-            System.err.println(e);
-        }
-    }
-
-    /**
-     * Getter method for the tokens
+     * Setter method for ther username of the active user
      * @param c Context of the app
-     * @return Values for each token
+     * @param value User's username
      */
-    public static String[] getTokens(Context c){
+    public static void setUserName(Context c, String value){
 
-        String[] tokens = new String[2];
-        byte[] access = new byte[150];
-        byte[] refresh = new byte[150];
-
+        byte[] userName = value.getBytes();
         File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
 
         try {
             RandomAccessFile rFile = new RandomAccessFile(file, "rw");
-            rFile.seek(2);
-            rFile.read(access);
-            rFile.seek(152);
-            rFile.read(refresh);
-        }
-        catch (IOException e){
-            System.err.println(e);
-        }
-
-        tokens[0] = access.toString();
-        tokens[1] = refresh.toString();
-
-        return tokens;
-    }
-
-    /**
-     * Setter method for the OAuth2 tokens
-     * @param c Context of the app
-     * @param tokens Tokens provided by the LS OAuth2 call
-     */
-    public static void setTokens(Context c, String[] tokens){
-
-        byte[] access = tokens[0].getBytes();
-        byte[] refresh = tokens[1].getBytes();
-        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
-
-        try {
-            RandomAccessFile rFile = new RandomAccessFile(file, "rw");
-            rFile.seek(2);
-            rFile.write(access);
-            rFile.seek(152);
-            rFile.write(refresh);
+            rFile.seek(4);
+            rFile.write(userName);
+            rFile.close();
         }
         catch (IOException e){
             System.err.println(e);
@@ -175,39 +128,70 @@ public class StateManager {
     }
 
     /**
-     * Used to determine if the user is logged in by checking the access tokens
+     * Used to determine if the user is logged in
      * @param c Context of the app
      * @return returns the login status as a boolean valuee
      */
     public static boolean isLoggedIn(Context c){
 
-        String token = getTokens(c)[0];
+        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
 
-        if(System.currentTimeMillis() > getExpirtionTime(c)) {
-            Log.d("StateManager", "Logged In: false" );
-            return false;
+        boolean loggedIn = false;
+
+        try {
+            RandomAccessFile rFile = new RandomAccessFile(file, "r");
+            rFile.seek(2);
+            loggedIn = rFile.readBoolean();
+            rFile.close();
+        }
+        catch (IOException e){
+            System.err.println(e);
         }
 
-        Log.d("StateManager", "Logged In: true");
-        return true;
+        Log.d("StateManager","Logged in: " + loggedIn);
+
+        return loggedIn;
+    }
+
+    /**
+     * Setter method for the login status of  the user
+     * @param c Context of the app
+     * @param value Value indicating login status
+     */
+    public static void setLoggedIn(Context c, boolean value){
+
+        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
+
+        try {
+            RandomAccessFile rFile = new RandomAccessFile(file, "rw");
+            rFile.seek(2);
+            rFile.writeBoolean(value);
+            rFile.close();
+        }
+        catch (IOException e){
+            System.err.println(e);
+        }
+
+        Log.d("StateManager","Logged in: " + value);
     }
 
     /**
      * Creates the state file for the app as a random access file.  The lengths are as follows:
      *  - 2 bytes for boolean firstTime
-     *  - 150 bytes for String accessToken
-     *  - 150 bytes for String refresh token
-     *  - 8 bytes for the token expiration time
+     *  - 2 bytes to determine if the user has logged in or not
+     *  - 100 bytes for the user name
      * @param f The state file
      */
     public static void createStateFile(File f){
 
         try {
             RandomAccessFile rFile = new RandomAccessFile(f, "rw");
-            rFile.setLength(310);
+            rFile.setLength(104);
 
             rFile.seek(0);
-            rFile.writeBoolean(true); //User is logged in for the first time
+            rFile.writeBoolean(true); //User is using the app for the first time
+            rFile.seek(2);
+            rFile.writeBoolean(false); //User is not logged in by default
 
             //strings don't need to be written
         }
