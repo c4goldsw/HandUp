@@ -15,6 +15,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.JsonReader;
+import android.util.JsonToken;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,8 +26,11 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.handup.handup.R;
 import com.handup.handup.helper.Constants;
+import com.handup.handup.helper.JsonConverter;
 import com.handup.handup.model.LSQuery;
 import com.handup.handup.model.StateManager;
 import com.pearson.pdn.learningstudio.core.AbstractService;
@@ -35,6 +40,7 @@ import com.pearson.pdn.learningstudio.oauth.OAuthServiceFactory;
 import com.pearson.pdn.learningstudio.oauth.config.OAuthConfig;
 
 import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * I followed
@@ -258,7 +264,7 @@ public class TabView extends AppCompatActivity {
                 System.out.println(httpStatusCode + " " + httpStatusMessage);
             }
             else {
-                n = r.getContentType() + "\n" + r.getContent();
+                n = r.getContent();
             }
 
             return n;
@@ -267,7 +273,16 @@ public class TabView extends AppCompatActivity {
         @Override
         protected void onPostExecute(String content){
 
-            name = content;
+            Gson g  = new Gson();
+
+            try {
+                JsonConverter m = g.fromJson(content, JsonConverter.class);
+                name = "Name: "+ m.getMe().getFirstName();
+
+            } catch(JsonSyntaxException b){
+                Log.d("Async","Error: " + b);
+                name = b.toString();
+            }
         }
     }
 
