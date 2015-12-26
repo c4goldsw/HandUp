@@ -9,6 +9,7 @@ import com.pearson.pdn.learningstudio.core.BasicService;
 import com.pearson.pdn.learningstudio.oauth.*;
 
 import android.content.Context;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.handup.handup.helper.Constants;
@@ -89,21 +90,21 @@ public class StateManager {
      */
     public static String getUserName(Context c){
 
-        byte[] userName = new byte[100];
+        String uName = "";
 
         File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
 
         try {
             RandomAccessFile rFile = new RandomAccessFile(file, "r");
             rFile.seek(4);
-            rFile.read(userName);
+            uName = rFile.readUTF();
             rFile.close();
         }
         catch (IOException e){
             System.err.println(e);
         }
 
-        return userName.toString();
+        return uName;
     }
 
     /**
@@ -113,13 +114,12 @@ public class StateManager {
      */
     public static void setUserName(Context c, String value){
 
-        byte[] userName = value.getBytes();
         File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
 
         try {
             RandomAccessFile rFile = new RandomAccessFile(file, "rw");
             rFile.seek(4);
-            rFile.write(userName);
+            rFile.writeUTF(value);
             rFile.close();
         }
         catch (IOException e){
@@ -186,7 +186,7 @@ public class StateManager {
 
         try {
             RandomAccessFile rFile = new RandomAccessFile(f, "rw");
-            rFile.setLength(104);
+            rFile.setLength(204);
 
             rFile.seek(0);
             rFile.writeBoolean(true); //User is using the app for the first time

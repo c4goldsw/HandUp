@@ -128,8 +128,7 @@ public class TabView extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         setupTabIcons();
 
-        name = StateManager.getUserName(this);
-
+        //test!
         new Query(StateManager.getUserName(this)).execute();
     }
 
@@ -222,6 +221,7 @@ public class TabView extends AppCompatActivity {
 
         public Query(String username){
             this.username = username;
+            Log.d("Async","Username: " + username);
         }
 
         @Override
@@ -245,7 +245,7 @@ public class TabView extends AppCompatActivity {
 
             Response r = null;
 
-            /*try{
+            try{
                 r = b.doMethod(AbstractService.HttpMethod.GET, "/me", null);
             } catch (IOException e){
                 return e.toString();
@@ -258,8 +258,8 @@ public class TabView extends AppCompatActivity {
                 System.out.println(httpStatusCode + " " + httpStatusMessage);
             }
             else {
-                n = r.getContent();
-            }*/
+                n = r.getContentType() + "\n" + r.getContent();
+            }
 
             return n;
         }
@@ -267,7 +267,7 @@ public class TabView extends AppCompatActivity {
         @Override
         protected void onPostExecute(String content){
 
-            //name = content;
+            name = content;
         }
     }
 
