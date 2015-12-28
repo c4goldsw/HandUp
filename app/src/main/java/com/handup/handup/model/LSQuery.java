@@ -1,11 +1,14 @@
 package com.handup.handup.model;
 
 import com.handup.handup.helper.Constants;
+import com.pearson.pdn.learningstudio.core.BasicService;
+import com.pearson.pdn.learningstudio.oauth.OAuthServiceFactory;
 import com.pearson.pdn.learningstudio.oauth.config.OAuthConfig;
 
 /**
  * Created by Christopher on 12/25/2015.  Used to make queries to learning studio.  The class
- * is a singleton so that no additional resources are used making additional elements.
+ * is a singleton so that no additional resources are used making additional elements.  Includes
+ * code taken from the Pearson API Java documenation
  */
 public class LSQuery {
 
@@ -15,6 +18,9 @@ public class LSQuery {
     private static LSQuery singleton;
 
     private OAuthConfig config;
+    private OAuthServiceFactory factory;
+
+    private BasicService bService;
 
     /**
      * Getter method for the singleton.  If the singleton is hasn't been instantiated, we do so.
@@ -24,6 +30,9 @@ public class LSQuery {
         return singleton != null ? singleton : new LSQuery() ;
     }
 
+    /**
+     * Constructor for the class.  Instantiates all other objects too
+     */
     private LSQuery(){
 
         //set the singleton to be this
@@ -36,10 +45,19 @@ public class LSQuery {
         config.setConsumerKey(Constants.TOKEN_KEY);
         config.setConsumerSecret(Constants.APPLICATION_SECRET);
         config.setClientString(Constants.CLIENT_STRING);
+
+        factory = new OAuthServiceFactory(config);
+
+        bService = new BasicService(factory);
     }
 
-    public OAuthConfig getConfig(){
+    public OAuthServiceFactory getFactory(){
 
-        return config;
+        return factory;
+    }
+
+    public BasicService getBasicService(){
+
+        return  bService;
     }
 }

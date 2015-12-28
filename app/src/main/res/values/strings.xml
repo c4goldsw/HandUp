@@ -15,5 +15,12 @@
     </string>
     <string name="title_activity_tab_view">HandUp</string>
     <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="profile_fragment_title">Profile</string>
+    <string name="course_fragment_title">Courses</string>
+    <string name="group_fragment_title">Groups</string>
+    <string name="error_fragment_title">Error!</string>
+
 </resources>

@@ -6,6 +6,11 @@ package com.handup.handup.helper;
  */
 public class JsonConverter {
 
+    /**
+     * GSON POJO holder for /me requests
+     */
+    public static class Me {
+
         private MeContent me;
 
         public MeContent getMe() {
@@ -16,13 +21,14 @@ public class JsonConverter {
             this.me = me;
         }
 
-        public static class MeContent{
+        public static class MeContent {
 
             private String id;
             private String firstName;
             private String lastName;
-            private String emailAddress;
-            private String clientString;
+
+            /*private String emailAddress;
+            private String clientString;*/
 
             public String getFirstName() {
                 return firstName;
@@ -48,7 +54,7 @@ public class JsonConverter {
                 this.id = id;
             }
 
-            public String getEmailAddress() {
+            /*public String getEmailAddress() {
                 return emailAddress;
             }
 
@@ -62,8 +68,12 @@ public class JsonConverter {
 
             public void setClientString(String clientString) {
                 this.clientString = clientString;
-            }
-
+            }*/
         }
+    }
+
+    /**
+     *
+     */
 
 }
