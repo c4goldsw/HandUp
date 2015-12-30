@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.app.Fragment;
@@ -18,17 +20,22 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.handup.handup.R;
+import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.JsonConverter;
 import com.handup.handup.model.LSQuery;
 import com.handup.handup.model.StateManager;
@@ -75,7 +82,17 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     /**
      * Toolbar for the app
      */
-    Toolbar  toolbar;
+    private Toolbar  toolbar;
+
+    /**
+     * Layout for the right nav drawer
+     */
+    private DrawerLayout drawerLayout;
+
+    /**
+     * List contained by the drawer
+     */
+    private ListView drawerList;
 
     /**
      * Used to keep track of the number of tabs
@@ -92,6 +109,8 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
      */
     private LSQuery q;
 
+    static String name = "";
+
     /*===========================================================================================
     Model / Controller related methods
     ===========================================================================================*/
@@ -99,16 +118,15 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //before loading the main activity, we determine what state the user was last in
-        determineState();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //before loading the main activity, we determine what state the user was last in
+        determineState();
 
         //enable and set up the tool bar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.profile_fragment_title);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -119,7 +137,9 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         });
 
         setupTabs();
+        setupNavDrawer();
 
+        new Query(StateManager.getUserName(this)).execute();
     }
 
     /**
@@ -166,6 +186,8 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         @Override
         protected String doInBackground(Void... params) {
 
+            Log.d("Async","Staring query with username: " + username);
+
             String jsonResponse = "";
 
             BasicService b = LSQuery.getSingleton().getBasicService();
@@ -199,11 +221,11 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
             try {
                 JsonConverter.Me m = g.fromJson(content, JsonConverter.Me.class);
-                //name = "Name: "+ m.getMe().getFirstName();
+                name = "Name: "+ m.getMe().getFirstName();
 
             } catch(JsonSyntaxException b){
                 Log.d("Async","Error: " + b);
-                //name = b.toString();
+                name = b.toString();
             }
         }
     }
@@ -238,7 +260,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_tab_view, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(/*name*/"");
+            textView.setText(name);
             return rootView;
         }
     }
@@ -274,17 +296,10 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
             @Override
             public void onPageSelected(int position) {
                 icons[currentTab].setAlpha(77);
-                icons[currentTab].setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                icons[currentTab].setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
                 icons[position].setAlpha(255);
                 icons[position].setColorFilter(ContextCompat.getColor(c, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
                 currentTab = position;
-
-                if (position == 0)
-                    getSupportActionBar().setTitle(R.string.profile_fragment_title);
-                else if (position == 1)
-                    getSupportActionBar().setTitle(R.string.course_fragment_title);
-                else if (position == 2)
-                    getSupportActionBar().setTitle(R.string.group_fragment_title);
             }
 
             @Override
@@ -325,6 +340,51 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
     }
 
+    /**
+     * Method used to load content into / set up the right nav bar
+     */
+    private void setupNavDrawer(){
+
+        //set up the nav bar and the list view inside of  it
+        String[] options = {"Logout", "Settings", "Help", "About"};
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        drawerList = (ListView) findViewById(R.id.right_drawer);
+
+        drawerList.setAdapter(new ArrayAdapter<String>(this,R.layout.nav_drawer_item
+                ,R.id.nav_drawer_text_view,options));
+
+        drawerList.setOnItemClickListener(new DrawerListClickListener());
+    }
+
+    /**
+     * Listener object for items in the drawer listview
+     */
+    public class DrawerListClickListener implements ListView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            selectItem(position);
+        }
+    }
+
+    /**
+     *
+     * @param pos position of the item in the list we selected
+     */
+    private void selectItem(int pos){
+
+        if(pos == Constants.DRAWER_LIST_LOGIN){
+
+            //log the user out
+            StateManager.setLoggedIn(this, false);
+            finish();
+            startActivity(new Intent(this, LoginActivity.class));
+        }
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -340,7 +400,9 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_drawer_button) {
+
+            drawerLayout.openDrawer(GravityCompat.END);
             return true;
         }
 

@@ -4,13 +4,7 @@
     tools:context=".controller.MainActivity">
 
     <item
-        android:id="@+id/action_search"
-        android:title="@string/action_search"
-        android:icon="@drawable/ic_search_24dp"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_drawer_button"
         android:title="@string/action_settings"
         android:icon="@drawable/ic_menu_24dp"
         app:showAsAction="ifRoom" />

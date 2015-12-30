@@ -32,7 +32,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        if(position == 0) {
+        /*if(position == 0) {
             return ProfileFragment.newInstance();
         }
         else if(position == 1){
@@ -40,10 +40,10 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         }
         else if(position == 2){
             return GroupFragment.newInstance();
-        }
+        }*/
 
         return MainActivity.PlaceholderFragment.newInstance(position + 1);
-    }
+}
 
     @Override
     public int getCount() {
@@ -53,6 +53,13 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
+
+        /*if(position == 0)
+            return "PROFILE";
+        else if(position == 1)
+            return "COURSES";
+        else if(position == 2)
+            return "STUDY";*/
 
         return null;
     }

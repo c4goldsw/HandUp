@@ -20,4 +20,6 @@ public class Constants {
 
     //Consstats related to the user state
     public static final String NO_ACTIVE_USER       = "";
+
+    public static final int DRAWER_LIST_LOGIN       = 0;
 }

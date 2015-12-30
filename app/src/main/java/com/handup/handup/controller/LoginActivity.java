@@ -80,7 +80,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         setStatusBarColor();
 
         // Set up the login form.
