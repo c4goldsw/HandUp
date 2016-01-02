@@ -16,7 +16,7 @@ public class Constants {
     public static final String APP_NAME             = "HandUp";
 
     //Constants related to files
-    public static final String APP_STATE_FILE       = "app state file";
+    public static final String APP_STATE_FILE_PREFIX = "app state file";
 
     //Consstats related to the user state
     public static final String NO_ACTIVE_USER       = "";
@@ -24,5 +24,8 @@ public class Constants {
     public static final int DRAWER_LIST_LOGIN       = 0;
 
     //Constatns related to LearningStudio Queries
-    public static final int PROFILE_REQUEST        = 0;
+    public static final int PROFILE_REQUEST         = 0;
+
+    //Activity result codes
+    public static final int SELECT_IMAGE            = 0;
 }

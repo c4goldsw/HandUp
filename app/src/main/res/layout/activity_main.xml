@@ -96,7 +96,6 @@
             android:dividerHeight="15dp"
             android:background="#ffffffff"
             android:padding="15dp"/>
-        />
 
      </LinearLayout>
 

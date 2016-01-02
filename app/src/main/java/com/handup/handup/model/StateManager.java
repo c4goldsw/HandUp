@@ -4,17 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import com.pearson.pdn.learningstudio.content.ContentService;
-import com.pearson.pdn.learningstudio.core.BasicService;
-import com.pearson.pdn.learningstudio.oauth.*;
-
 import android.content.Context;
-import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.handup.handup.helper.Constants;
-import com.pearson.pdn.learningstudio.oauth.config.OAuthConfig;
-import com.pearson.pdn.learningstudio.oauth.request.OAuth2Request;
 
 /**
  * Created by Christopher on 12/23/2015.  Used to manage and persist the state of the app
@@ -25,14 +18,14 @@ public class StateManager {
 
 
     /**
-     *
+     * TODO: OBSOLETE, REMOVE
      * @param c Context for the app
      * @return Returns true if the user is using the app is being loaded on the phone
      * for the first time
-     */
+     *
     public static boolean firstTimeUsing(Context c){
 
-        File file = c.getFileStreamPath(Constants.APP_STATE_FILE);
+        File file = c.getFileStreamPath(Constants.APP_STATE_FILE_PREFIX);
 
         //first we check to see if
         if(!file.exists()) {
@@ -42,7 +35,7 @@ public class StateManager {
             return true;
 
         /*Once the user logs in for the first time, the state will eill exist - we need
-        to see if the user has logged in for the first time or not*/
+        to see if the user has logged in for the first time or not*
         } else {
 
             try{
@@ -66,9 +59,9 @@ public class StateManager {
     /**
      * Sets the first time variable to false
      * @param c Context of the app
-     */
+     *
     public static void setFirstTimeToFalse(Context c){
-        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
+        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE_PREFIX);
 
         Log.d("StateManager", "Setting first time to false");
 
@@ -81,7 +74,7 @@ public class StateManager {
         catch (IOException e){
             System.err.println(e);
         }
-    }
+    }*/
 
     /**
      * Getter method for active user's username
@@ -92,7 +85,7 @@ public class StateManager {
 
         String uName = "";
 
-        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
+        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE_PREFIX);
 
         try {
             RandomAccessFile rFile = new RandomAccessFile(file, "r");
@@ -114,7 +107,7 @@ public class StateManager {
      */
     public static void setUserName(Context c, String value){
 
-        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
+        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE_PREFIX);
 
         try {
             RandomAccessFile rFile = new RandomAccessFile(file, "rw");
@@ -134,7 +127,7 @@ public class StateManager {
      */
     public static boolean isLoggedIn(Context c){
 
-        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
+        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE_PREFIX);
 
         boolean loggedIn = false;
 
@@ -160,7 +153,7 @@ public class StateManager {
      */
     public static void setLoggedIn(Context c, boolean value){
 
-        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE);
+        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE_PREFIX);
 
         try {
             RandomAccessFile rFile = new RandomAccessFile(file, "rw");

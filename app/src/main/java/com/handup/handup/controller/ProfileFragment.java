@@ -1,25 +1,31 @@
 package com.handup.handup.controller;
 
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.handup.handup.R;
 import com.handup.handup.helper.Constants;
-import com.handup.handup.helper.JsonConverter;
-import com.handup.handup.model.LsQueryTask;
-import com.handup.handup.model.StateManager;
+import com.handup.handup.helper.General;
 import com.handup.handup.model.User;
 
-import java.util.HashMap;
+import java.io.IOException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,14 +35,14 @@ import java.util.HashMap;
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment implements LsQueryTask.LsQueryUser{
+public class ProfileFragment extends Fragment{
 
     private TextView userName;
+    private TextView points;
+    private ImageView profilePicture;
 
-    /**
-     * This is the POJO that is used to store all firebase user queries
-     */
-    private User user = new User();
+    private CardView profileCard;
+    private CardView contentCard;
 
     private OnProfileInteractionListener mListener;
 
@@ -50,7 +56,6 @@ public class ProfileFragment extends Fragment implements LsQueryTask.LsQueryUser
      *
      * @return A new instance of fragment ProfileFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ProfileFragment newInstance() {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
@@ -61,10 +66,8 @@ public class ProfileFragment extends Fragment implements LsQueryTask.LsQueryUser
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mListener.onProfileSelect(this);
 
-        //load data into the UI
-        new LsQueryTask(StateManager.getUserName(getContext()), this,
-                Constants.PROFILE_REQUEST).execute();
     }
 
     @Override
@@ -74,20 +77,29 @@ public class ProfileFragment extends Fragment implements LsQueryTask.LsQueryUser
         // Inflate the layout for this fragment
         View ui = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        //get UI views
-        userName = (TextView) ui.findViewById(R.id.profile_card_name);
-        userName.setText(MainActivity.getMe().getMe().getFirstName());
+        Log.d("ProfileFragment", "onCreateView: starting!");
 
-        //if(user.)
+        //get UI views
+        points = (TextView) ui.findViewById(R.id.rank_card_points);
+        userName = (TextView) ui.findViewById(R.id.profile_card_name);
+        profilePicture = (ImageView) ui.findViewById(R.id.profile_card_picture);
+
+        profileCard = (CardView) ui.findViewById(R.id.profile_card);
+        contentCard = (CardView) ui.findViewById(R.id.content_card);
+
+        profileCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*Code from: http://bit.ly/1UmSnOi*/
+                startActivityForResult(new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
+                        Constants.SELECT_IMAGE);
+            }
+        });
+
+        updateInterface();
 
         return ui;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onProfileSelect(uri);
-        }
     }
 
     @Override
@@ -108,24 +120,6 @@ public class ProfileFragment extends Fragment implements LsQueryTask.LsQueryUser
     }
 
     /**
-     * This method is called when an LsQueryObject finishes from the async query task
-     * @param map Contains the data that will be loaded in the activity
-     */
-    @Override
-    public void onLsQueryFinish(HashMap<String, Object> map) {
-
-        Gson g  = new Gson();
-        JsonConverter.Me me = null;
-
-        try {
-            me = g.fromJson((String) map.get("/me"), JsonConverter.Me.class);
-            userName.setText(me.getMe().getFirstName());
-        } catch (JsonSyntaxException b) {
-            Log.d("Async", "Error: " + b);
-        }
-    }
-
-    /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
@@ -137,6 +131,62 @@ public class ProfileFragment extends Fragment implements LsQueryTask.LsQueryUser
      */
     public interface OnProfileInteractionListener {
 
-        void onProfileSelect(Uri uri);
+        void onProfileSelect(ProfileFragment f);
+    }
+
+    //taken from http://bit.ly/1UmSnOi , on SO
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Constants.SELECT_IMAGE)
+            if (resultCode == AppCompatActivity.RESULT_OK) {
+                updateProfilePicture(data);
+            }
+    }
+
+     /*===========================================================================================
+    UI Methods
+    ===========================================================================================*/
+
+    public void updateInterface(){
+
+        Log.d("updateInterface","Being called!");
+
+        User u = MainActivity.getUser();
+
+        if(userName == null || u == null) {
+
+            Log.d("updateInterface","userName " + userName + " user " + u);
+            return;
+        }
+
+        points.setText("Points: " + u.getPoints());
+        userName.setText(MainActivity.getMe().getMe().getFirstName());
+
+        byte[] profilePictureArray = u.getProfilePicture();
+
+        if(profilePictureArray != null){
+
+            Bitmap picture = BitmapFactory.decodeByteArray(profilePictureArray, 0,
+                    profilePictureArray.length);
+            profilePicture.setImageBitmap(picture);
+        }
+    }
+
+    public void updateProfilePicture(Intent data){
+        Uri selectedImage = data.getData();
+
+        try {
+
+            Bitmap finalImage = General.getPortraitImage(selectedImage, getActivity());
+
+            profilePicture.setImageBitmap(finalImage);
+
+            /*Log.d("PortraitImage","rotationInDegrees: " + rotationInDegrees + " rotation: " + rotation
+             + " some exif value for 90: " +ExifInterface.ORIENTATION_ROTATE_90);*/
+
+            //MainActivity.getUser().setProfilePicture();
+
+        } catch(IOException e){}
     }
 }

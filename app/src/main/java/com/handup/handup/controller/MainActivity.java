@@ -1,5 +1,6 @@
 package com.handup.handup.controller;
 
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -26,7 +27,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.handup.handup.R;
@@ -35,6 +39,7 @@ import com.handup.handup.helper.JsonConverter;
 import com.handup.handup.model.LsQueryObject;
 import com.handup.handup.model.LsQueryTask;
 import com.handup.handup.model.StateManager;
+import com.handup.handup.model.User;
 import com.handup.handup.view.SectionsPagerAdapter;
 import com.pearson.pdn.learningstudio.core.AbstractService;
 import com.pearson.pdn.learningstudio.core.BasicService;
@@ -112,7 +117,12 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
      */
     private static JsonConverter.Me me = new JsonConverter.Me();
 
-    static String name = "";
+    /**
+     * This is the POJO that is used to store all firebase user queries
+     */
+    private static User user;
+
+    public ProfileFragment profileFragment;
 
     /*===========================================================================================
     Model / Controller related methods
@@ -124,12 +134,10 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Firebase.setAndroidContext(this);
+
         //before loading the main activity, we determine what state the user was last in
         determineState();
-
-        //load data into the UI
-        new LsQueryTask(StateManager.getUserName(this), this,
-                Constants.PROFILE_REQUEST).execute();
 
         //enable and set up the tool bar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -145,8 +153,6 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
         setupTabs();
         setupNavDrawer();
-
-        new Query(StateManager.getUserName(this)).execute();
     }
 
     /**
@@ -156,86 +162,16 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
      */
     private void determineState(){
 
-        if(StateManager.firstTimeUsing(this)) {
-            if(StateManager.isLoggedIn(this)){
+        if(StateManager.isLoggedIn(this)){
 
-                StateManager.setFirstTimeToFalse(this);
-
-                //start account settup and show user to help
-                Firebase ref = new Firebase("https://intense-inferno-38.firebaseio.com/");
-
-            } else {
-
-                finish();
-                startActivity(new Intent(this, LoginActivity.class));
-            }
+            //start account setup
+            new LsQueryTask(StateManager.getUserName(this), this,
+                    Constants.PROFILE_REQUEST).execute();
 
         } else {
-            if(!StateManager.isLoggedIn(this)){
-                Log.d("StateManager","Regular login");
-                finish();
-                startActivity(new Intent(this, LoginActivity.class));
-            }
-        }
-    }
 
-    /**
-     * Async task used to make a LS Query.  Contains code taken from the Perason API Java
-     * documentation
-     */
-    private class Query extends AsyncTask<Void, Void, String>{
-
-        String username;
-
-        public Query(String username){
-            this.username = username;
-            Log.d("Async","Username: " + username);
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-
-            Log.d("Async","Staring query with username: " + username);
-
-            String jsonResponse = "";
-
-            BasicService b = LsQueryObject.getSingleton().getBasicService();
-            b.useOAuth2(username);
-
-            Response r = null;
-
-            try{
-                r = b.doMethod(AbstractService.HttpMethod.GET, "/me", null);
-            } catch (IOException e){
-                return e.toString();
-            }
-
-            if(r.isError()) {
-                int httpStatusCode = r.getStatusCode();// 404
-                String httpStatusMessage = r.getStatusMessage();// Not Found
-
-                System.out.println(httpStatusCode + " " + httpStatusMessage);
-            }
-            else {
-                jsonResponse = r.getContent();
-            }
-
-            return jsonResponse;
-        }
-
-        @Override
-        protected void onPostExecute(String content){
-
-            Gson g  = new Gson();
-
-            try {
-                JsonConverter.Me m = g.fromJson(content, JsonConverter.Me.class);
-                name = "Name: "+ m.getMe().getFirstName();
-
-            } catch(JsonSyntaxException b){
-                Log.d("Async","Error: " + b);
-                name = b.toString();
-            }
+            finish();
+            startActivity(new Intent(this, LoginActivity.class));
         }
     }
 
@@ -246,10 +182,37 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     @Override
     public void onLsQueryFinish(HashMap<String, Object> map) {
 
-        Gson g  = new Gson();
+        final Gson g  = new Gson();
 
         try {
             me = g.fromJson((String) map.get("/me"), JsonConverter.Me.class);
+
+            final Firebase ref = new Firebase("https://intense-inferno-38.firebaseio.com/users/" +
+                    me.getMe().getId());
+
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    user = dataSnapshot.getValue(User.class);
+
+                    if (user == null) {
+
+                        user = new User();
+                        user.setUid(me.getMe().getId());
+                        ref.setValue(user);
+                    }
+
+                    if(profileFragment!= null)
+                        profileFragment.updateInterface();
+                    else
+                        Log.d("ProfileFragment","Profile fragment is null!");
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {Log.d("FireBase","Error:"
+                + firebaseError);}
+            });
 
         } catch (JsonSyntaxException b) {
             Log.d("Async", "Error: " + b);
@@ -406,7 +369,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     ===========================================================================================*/
 
     @Override
-    public void onProfileSelect(Uri uri) {}
+    public void onProfileSelect(ProfileFragment f) { profileFragment = f;}
 
     @Override
     public void onCourseSelect(Uri uri) {}
@@ -419,4 +382,6 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     ===========================================================================================*/
 
     public static JsonConverter.Me getMe(){return me;}
+
+    public static User getUser(){return user;}
 }

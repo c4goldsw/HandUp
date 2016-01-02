@@ -26,5 +26,6 @@
     <!-- Profile fragment strings -->
     <string name="content_card_text">Content</string>
     <string name="peer_card_text">Peers</string>
+    <string name="rank_card_points">Points </string>
 
 </resources>
