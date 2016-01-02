@@ -23,4 +23,8 @@
     <string name="group_fragment_title">Groups</string>
     <string name="error_fragment_title">Error!</string>
 
+    <!-- Profile fragment strings -->
+    <string name="content_card_text">Content</string>
+    <string name="peer_card_text">Peers</string>
+
 </resources>

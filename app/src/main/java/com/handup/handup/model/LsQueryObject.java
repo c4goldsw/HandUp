@@ -10,12 +10,12 @@ import com.pearson.pdn.learningstudio.oauth.config.OAuthConfig;
  * is a singleton so that no additional resources are used making additional elements.  Includes
  * code taken from the Pearson API Java documenation
  */
-public class LsQuery {
+public class LsQueryObject {
 
     /**
      * The singleton
      */
-    private static LsQuery singleton;
+    private static LsQueryObject singleton;
 
     private OAuthConfig config;
     private OAuthServiceFactory factory;
@@ -26,14 +26,14 @@ public class LsQuery {
      * Getter method for the singleton.  If the singleton is hasn't been instantiated, we do so.
      * @return The singleton
      */
-    public static LsQuery getSingleton(){
-        return singleton != null ? singleton : new LsQuery() ;
+    public static LsQueryObject getSingleton(){
+        return singleton != null ? singleton : new LsQueryObject() ;
     }
 
     /**
      * Constructor for the class.  Instantiates all other objects too
      */
-    private LsQuery(){
+    private LsQueryObject(){
 
         //set the singleton to be this
         singleton = this;

@@ -32,17 +32,17 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        /*if(position == 0) {
-            return ProfileFragment.newInstance();
-        }
-        else if(position == 1){
+        if(position == 0) {
             return CourseFragment.newInstance();
         }
-        else if(position == 2){
+        else if(position == 1){
             return GroupFragment.newInstance();
-        }*/
+        }
+        else if(position == 2){
+            return ProfileFragment.newInstance();
+        }
 
-        return MainActivity.PlaceholderFragment.newInstance(position + 1);
+        return null;
 }
 
     @Override

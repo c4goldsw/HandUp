@@ -1,8 +1,98 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.handup.handup.controller.ProfileFragment">
 
 
-</FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/profile_card"
+            card_view:cardCornerRadius="3dp"
+            card_view:cardElevation="4dp"
+            android:layout_marginLeft="6dp" android:layout_marginRight="3dp"
+            android:layout_marginTop="6dp" android:layout_marginBottom="3dp"
+            style="@style/ProfileCard">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/profile_card_picture"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"/>
+
+                <TextView
+                    android:id="@+id/profile_card_name"
+                    style="@style/ProfileCardText"/>
+
+            </FrameLayout>
+
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/rank_card"
+            card_view:cardCornerRadius="3dp"
+            card_view:cardElevation="4dp"
+            android:layout_marginLeft="3dp" android:layout_marginRight="6dp"
+            android:layout_marginTop="6dp" android:layout_marginBottom="3dp"
+            style="@style/ProfileCard">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimaryDark">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/scrim_gradient_light"/>
+
+
+                <TextView
+                    android:id="@+id/rank_card_points"
+                    style="@style/ProfileCardText"/>
+
+            </FrameLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+    <android.support.v7.widget.CardView
+            android:id="@+id/content_card"
+            card_view:cardCornerRadius="3dp"
+            card_view:cardElevation="4dp"
+            android:layout_marginLeft="6dp" android:layout_marginRight="6dp"
+            android:layout_marginTop="3dp" android:layout_marginBottom="6dp"
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_weight="1">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/content_card_picture"
+                    android:layout_height="match_parent"
+                    android:layout_width="match_parent" />
+
+                <TextView
+                    android:id="@+id/content_card_text"
+                    android:text="@string/content_card_text"
+                    style="@style/ProfileCardText"/>
+
+            </FrameLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

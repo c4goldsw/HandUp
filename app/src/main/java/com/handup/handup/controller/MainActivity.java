@@ -7,37 +7,33 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
+import com.firebase.client.Firebase;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.handup.handup.R;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.JsonConverter;
-import com.handup.handup.model.LSQuery;
+import com.handup.handup.model.LsQueryObject;
+import com.handup.handup.model.LsQueryTask;
 import com.handup.handup.model.StateManager;
 import com.handup.handup.view.SectionsPagerAdapter;
 import com.pearson.pdn.learningstudio.core.AbstractService;
@@ -45,6 +41,7 @@ import com.pearson.pdn.learningstudio.core.BasicService;
 import com.pearson.pdn.learningstudio.core.Response;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * I followed
@@ -52,7 +49,8 @@ import java.io.IOException;
  * this tutorial</a> and used code from it in order to create the tab views.
  */
 public class MainActivity extends AppCompatActivity implements ProfileFragment.OnProfileInteractionListener,
-CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractionListener{
+CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractionListener,
+        LsQueryTask.LsQueryUser{
 
     /*===========================================================================================
     Variables
@@ -107,7 +105,12 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     /**
      * Interface for making Learning Studio queries
      */
-    private LSQuery q;
+    private LsQueryObject q;
+
+    /**
+     * This is the POJO that isused to store the LS /me query.
+     */
+    private static JsonConverter.Me me = new JsonConverter.Me();
 
     static String name = "";
 
@@ -124,17 +127,21 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         //before loading the main activity, we determine what state the user was last in
         determineState();
 
+        //load data into the UI
+        new LsQueryTask(StateManager.getUserName(this), this,
+                Constants.PROFILE_REQUEST).execute();
+
         //enable and set up the tool bar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
             }
-        });
+        });*/
 
         setupTabs();
         setupNavDrawer();
@@ -153,7 +160,9 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
             if(StateManager.isLoggedIn(this)){
 
                 StateManager.setFirstTimeToFalse(this);
-                //start the tutorial
+
+                //start account settup and show user to help
+                Firebase ref = new Firebase("https://intense-inferno-38.firebaseio.com/");
 
             } else {
 
@@ -190,7 +199,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
             String jsonResponse = "";
 
-            BasicService b = LSQuery.getSingleton().getBasicService();
+            BasicService b = LsQueryObject.getSingleton().getBasicService();
             b.useOAuth2(username);
 
             Response r = null;
@@ -231,39 +240,22 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     }
 
     /**
-     * A placeholder fragment containing a simple com.handup.handup.view.
+     * This method is called when an LsQueryObject finishes from the async query task
+     * @param map Contains the data that will be loaded in the activity
      */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+    @Override
+    public void onLsQueryFinish(HashMap<String, Object> map) {
 
-        public PlaceholderFragment() {
-        }
+        Gson g  = new Gson();
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
+        try {
+            me = g.fromJson((String) map.get("/me"), JsonConverter.Me.class);
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_tab_view, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(name);
-            return rootView;
+        } catch (JsonSyntaxException b) {
+            Log.d("Async", "Error: " + b);
         }
     }
+
 
     /*===========================================================================================
     View (UI) methods
@@ -315,14 +307,14 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
         icons = new Drawable[tabCount];
 
-        icons[0] = ContextCompat.getDrawable(this, R.drawable.ic_stars_24dp);
+        icons[0] = ContextCompat.getDrawable(this, R.drawable.ic_school_24dp);
         icons[0].setAlpha(255); // set to 255 as this is the initial tab
         icons[0].setColorFilter(ContextCompat.getColor(this, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
-        icons[1] = ContextCompat.getDrawable(this, R.drawable.ic_school_24dp);
+        icons[1] = ContextCompat.getDrawable(this, R.drawable.ic_people_24dp);
         icons[1].setAlpha(77);
 
-        icons[2] = ContextCompat.getDrawable(this, R.drawable.ic_people_24dp);
+        icons[2] = ContextCompat.getDrawable(this, R.drawable.ic_acount_box_24dp);
         icons[2].setAlpha(77);
 
         /*icons[3] = ContextCompat.getDrawable(this, R.drawable.ic_search_24dp);
@@ -421,4 +413,10 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
     @Override
     public void onGroupSelect(Uri uri) {}
+
+    /*===========================================================================================
+    Miscellaneous methods
+    ===========================================================================================*/
+
+    public static JsonConverter.Me getMe(){return me;}
 }

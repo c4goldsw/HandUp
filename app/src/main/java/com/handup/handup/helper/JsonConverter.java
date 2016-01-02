@@ -21,6 +21,11 @@ public class JsonConverter {
             this.me = me;
         }
 
+        public Me(){
+
+            me = new MeContent();
+        }
+
         public static class MeContent {
 
             private String id;
@@ -71,9 +76,4 @@ public class JsonConverter {
             }*/
         }
     }
-
-    /**
-     *
-     */
-
 }
