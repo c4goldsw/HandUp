@@ -17,18 +17,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.firebase.client.Firebase;
 import com.handup.handup.R;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.General;
-import com.handup.handup.model.FbDataChange;
-import com.handup.handup.model.User;
-
-import org.apache.log4j.chainsaw.Main;
+import com.handup.handup.model.fbquery.FbDataChange;
+import com.handup.handup.model.fbquery.User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -100,7 +96,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        updateInterface();
+        updateUI();
 
         return ui;
     }
@@ -151,15 +147,15 @@ public class ProfileFragment extends Fragment {
     UI Methods
     ===========================================================================================*/
 
-    public void updateInterface() {
+    public void updateUI() {
 
-        Log.d("updateInterface", "Being called!");
+        Log.d("updateUI", "Being called!");
 
         User u = MainActivity.getUser();
 
         if (userName == null || u == null) {
 
-            Log.d("updateInterface", "userName " + userName + " user " + u);
+            Log.d("updateUI", "userName " + userName + " user " + u);
             return;
         }
 

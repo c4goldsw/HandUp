@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.handup.handup.controller.CourseFragment;
 import com.handup.handup.controller.GroupFragment;
 import com.handup.handup.controller.MainActivity;
+import com.handup.handup.controller.MenuFragment;
 import com.handup.handup.controller.ProfileFragment;
 
 /**
@@ -41,6 +42,9 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         else if(position == 1){//used to be 2
             return ProfileFragment.newInstance();
         }
+        else if(position == 2){
+            return MenuFragment.newInstance();
+        }
 
         return null;
 }
@@ -52,15 +56,5 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public CharSequence getPageTitle(int position) {
-
-        /*if(position == 0)
-            return "PROFILE";
-        else if(position == 1)
-            return "COURSES";
-        else if(position == 2)
-            return "STUDY";*/
-
-        return null;
-    }
+    public CharSequence getPageTitle(int position) {return null;}
 }

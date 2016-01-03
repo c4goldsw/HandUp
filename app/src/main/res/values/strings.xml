@@ -28,4 +28,11 @@
     <string name="peer_card_text">Peers</string>
     <string name="rank_card_points">Points </string>
 
+    <!-- Course fragment strings -->
+    <string name="fragment_course_add_course">ADD COURSE</string>
+    <string name="fragment_course_remove_course">REMOVE COURSE</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

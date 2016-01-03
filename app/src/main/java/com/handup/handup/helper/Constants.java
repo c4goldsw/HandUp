@@ -20,8 +20,7 @@ public class Constants {
 
     //Consstats related to the user state
     public static final String NO_ACTIVE_USER       = "";
-
-    public static final int DRAWER_LIST_LOGIN       = 0;
+    public static final int MENUFRAGMENT_LOGOUT = 0;
 
     //Constatns related to LearningStudio Queries
     public static final int PROFILE_REQUEST         = 0;

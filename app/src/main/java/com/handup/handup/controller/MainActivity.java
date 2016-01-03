@@ -19,10 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.firebase.client.DataSnapshot;
@@ -33,11 +30,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.handup.handup.R;
 import com.handup.handup.helper.Constants;
-import com.handup.handup.helper.JsonConverter;
-import com.handup.handup.model.LsQueryObject;
-import com.handup.handup.model.LsQueryTask;
+import com.handup.handup.model.lsquery.LsQueryObject;
+import com.handup.handup.model.StartQueryTask;
 import com.handup.handup.model.StateManager;
-import com.handup.handup.model.User;
+import com.handup.handup.model.fbquery.User;
+import com.handup.handup.model.lsquery.Me;
 import com.handup.handup.view.SectionsPagerAdapter;
 
 import java.util.HashMap;
@@ -49,7 +46,7 @@ import java.util.HashMap;
  */
 public class MainActivity extends AppCompatActivity implements ProfileFragment.OnProfileInteractionListener,
 CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractionListener,
-        LsQueryTask.LsQueryUser{
+        StartQueryTask.LsQueryUser, MenuFragment.OnFragmentInteractionListener{
 
     /*===========================================================================================
     Variables
@@ -94,7 +91,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     /**
      * Used to keep track of the number of tabs
      */
-    public static final int tabCount = 2;
+    public static final int tabCount = 3;
 
     /**
      * An array of Drawables containing each icon used in the tabs
@@ -109,14 +106,15 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     /**
      * This is the POJO that isused to store the LS /me query.
      */
-    private static JsonConverter.Me me = new JsonConverter.Me();
+    private static Me me = new Me();
 
     /**
      * This is the POJO that is used to store all firebase user queries
      */
-    private static User user;
+    private static User user = new User();
 
-    public ProfileFragment profileFragment;
+    private ProfileFragment profileFragment;
+    private CourseFragment courseFragment;
 
     /*===========================================================================================
     Model / Controller related methods
@@ -133,20 +131,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         //before loading the main activity, we determine what state the user was last in
         determineState();
 
-        //enable and set up the tool bar
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });*/
-
         setupTabs();
-        setupNavDrawer();
     }
 
     /**
@@ -159,7 +144,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         if(StateManager.isLoggedIn(this)){
 
             //start account setup
-            new LsQueryTask(StateManager.getUserName(this), this,
+            new StartQueryTask(StateManager.getUserName(this), this,
                     Constants.PROFILE_REQUEST).execute();
 
         } else {
@@ -179,7 +164,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         final Gson g  = new Gson();
 
         try {
-            me = g.fromJson((String) map.get("/me"), JsonConverter.Me.class);
+            me = g.fromJson((String) map.get("/me"), Me.class);
 
             final Firebase ref = new Firebase("https://intense-inferno-38.firebaseio.com/users/" +
                     me.getMe().getId());
@@ -197,10 +182,13 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
                         ref.setValue(user);
                     }
 
-                    if(profileFragment!= null)
-                        profileFragment.updateInterface();
-                    else
-                        Log.d("ProfileFragment","Profile fragment is null!");
+                    /*TODO: I don't know, but this could end up being VERY dangerous... consider
+                    removing*/
+                    if(profileFragment != null)
+                        profileFragment.updateUI();
+
+                    if(courseFragment != null)
+                        courseFragment.updateUI();
                 }
 
                 @Override
@@ -213,6 +201,16 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         }
     }
 
+    /**
+     * Logs the user out
+     */
+    public void logout(){
+
+        //log the user out
+        StateManager.setLoggedIn(this, false);
+        finish();
+        startActivity(new Intent(this, LoginActivity.class));
+    }
 
     /*===========================================================================================
     View (UI) methods
@@ -272,67 +270,16 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         icons[1] = ContextCompat.getDrawable(this, R.drawable.ic_acount_box_24dp);
         icons[1].setAlpha(77);
 
+        icons[2] = ContextCompat.getDrawable(this, R.drawable.ic_menu_24dp);
+        icons[2].setAlpha(77);
 
         /*icons[1] = ContextCompat.getDrawable(this, R.drawable.ic_people_24dp);
-        icons[1].setAlpha(77);
-
-        icons[3] = ContextCompat.getDrawable(this, R.drawable.ic_search_24dp);
-        icons[3].setAlpha(77);
-
-        icons[4] = ContextCompat.getDrawable(this, R.drawable.ic_menu_24dp);
-        icons[4].setAlpha(77);*/
+        icons[1].setAlpha(77);*/
 
         tabLayout.getTabAt(0).setIcon(icons[0]);
         tabLayout.getTabAt(1).setIcon(icons[1]);
-        //tabLayout.getTabAt(2).setIcon(icons[2]);
-        //tabLayout.getTabAt(3).setIcon(icons[3]);
-        //tabLayout.getTabAt(4).setIcon(icons[4]);
+        tabLayout.getTabAt(2).setIcon(icons[2]);
 
-
-    }
-
-    /**
-     * Method used to load content into / set up the right nav bar
-     */
-    private void setupNavDrawer(){
-
-        //set up the nav bar and the list view inside of  it
-        String[] options = {"Logout", "Settings", "Help", "About"};
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        drawerList = (ListView) findViewById(R.id.right_drawer);
-
-        drawerList.setAdapter(new ArrayAdapter<String>(this,R.layout.nav_drawer_item
-                ,R.id.nav_drawer_text_view,options));
-
-        drawerList.setOnItemClickListener(new DrawerListClickListener());
-    }
-
-    /**
-     * Listener object for items in the drawer listview
-     */
-    public class DrawerListClickListener implements ListView.OnItemClickListener{
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            selectItem(position);
-        }
-    }
-
-    /**
-     *
-     * @param pos position of the item in the list we selected
-     */
-    private void selectItem(int pos){
-
-        if(pos == Constants.DRAWER_LIST_LOGIN){
-
-            //log the user out
-            StateManager.setLoggedIn(this, false);
-            finish();
-            startActivity(new Intent(this, LoginActivity.class));
-        }
 
     }
 
@@ -373,11 +320,22 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     @Override
     public void onGroupSelect(Uri uri) {}
 
-    /*===========================================================================================
+    @Override
+    public void menuFragmentInteraction(int option) {
+
+        if(option == Constants.MENUFRAGMENT_LOGOUT)
+            logout();
+    }
+
+    @Override
+    public void setCourseFragment(CourseFragment courseFragment) {
+        this.courseFragment = courseFragment;
+    }
+/*===========================================================================================
     Miscellaneous methods
     ===========================================================================================*/
 
-    public static JsonConverter.Me getMe(){return me;}
+    public static Me getMe(){return me;}
 
     public static User getUser(){return user;}
 }

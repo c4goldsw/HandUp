@@ -5,20 +5,33 @@
     android:orientation="vertical"
     tools:context="com.handup.handup.controller.CourseFragment">
 
-    <ScrollView
-        android:layout_height="match_parent"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/fragment_course_list"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
         android:layout_width="match_parent">
 
-    </ScrollView>
+    </android.support.v7.widget.RecyclerView>
 
     <LinearLayout
         android:id="@+id/fragment_course_footer"
         android:layout_height="48dp"
         android:layout_width="match_parent"
-        android:orientation="horizontal">
-        <!--<Button
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:elevation="5dp">
+
+        <Button
             android:id="@+id/fragment_course_add_course"
-            /> -->
+            android:text="@string/fragment_course_add_course"
+            style="@style/PersistentFooterButton"/>
+
+        <Button
+            android:id="@+id/fragment_course_remove_course"
+            android:text="@string/fragment_course_remove_course"
+            style="@style/PersistentFooterButton" />
+
     </LinearLayout>
 
 </LinearLayout>
