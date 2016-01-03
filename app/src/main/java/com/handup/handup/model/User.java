@@ -1,5 +1,7 @@
 package com.handup.handup.model;
 
+import android.util.Base64;
+
 import java.util.ArrayList;
 
 /**
@@ -11,15 +13,21 @@ public class User {
 
     private String uid;
     private int points;
-    private byte[] profilePicture;
+
+    //profilePicture is only to be used for FireBase storage, whilst inAppProfilePicture
+    //is for use in the app
+    private String profilePicture;
+    private byte[] inAppProfilePicture;
 
     private int[] courses;
 
     private ArrayList<ArrayList<String>> contentAddresses;
     private ArrayList<ArrayList<String>> meetingAddresses;
 
-    public User(){
+    public User(){}
 
+    public byte[] getInAppProfilePicture() {
+        return inAppProfilePicture;
     }
 
     public int[] getCourses() {
@@ -46,12 +54,20 @@ public class User {
         this.points = points;
     }
 
-    public byte[] getProfilePicture() {
+    public String getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(byte[] profilePicture) {
+    public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+
+        //taken from http://stackoverflow.com/questions/26292969/can-i-store-image-files-in-firebase-using-java-api
+        inAppProfilePicture = Base64.decode(profilePicture, Base64.DEFAULT);
+    }
+
+    public void setProfilePicture(String profilePicture, byte[] byteArray){
+        this.profilePicture = profilePicture;
+        inAppProfilePicture = byteArray;
     }
 
     public ArrayList<ArrayList<String>> getContentAddresses() {

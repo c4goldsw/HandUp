@@ -2,17 +2,14 @@ package com.handup.handup.controller;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +17,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.client.Firebase;
 import com.handup.handup.R;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.General;
+import com.handup.handup.model.FbDataChange;
 import com.handup.handup.model.User;
 
+import org.apache.log4j.chainsaw.Main;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,7 +38,7 @@ import java.io.IOException;
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment{
+public class ProfileFragment extends Fragment {
 
     private TextView userName;
     private TextView points;
@@ -92,7 +95,7 @@ public class ProfileFragment extends Fragment{
             public void onClick(View v) {
                 /*Code from: http://bit.ly/1UmSnOi*/
                 startActivityForResult(new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
+                                android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
                         Constants.SELECT_IMAGE);
             }
         });
@@ -140,7 +143,7 @@ public class ProfileFragment extends Fragment{
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == Constants.SELECT_IMAGE)
             if (resultCode == AppCompatActivity.RESULT_OK) {
-                updateProfilePicture(data);
+                selectProfilePicture(data);
             }
     }
 
@@ -148,24 +151,24 @@ public class ProfileFragment extends Fragment{
     UI Methods
     ===========================================================================================*/
 
-    public void updateInterface(){
+    public void updateInterface() {
 
-        Log.d("updateInterface","Being called!");
+        Log.d("updateInterface", "Being called!");
 
         User u = MainActivity.getUser();
 
-        if(userName == null || u == null) {
+        if (userName == null || u == null) {
 
-            Log.d("updateInterface","userName " + userName + " user " + u);
+            Log.d("updateInterface", "userName " + userName + " user " + u);
             return;
         }
 
         points.setText("Points: " + u.getPoints());
         userName.setText(MainActivity.getMe().getMe().getFirstName());
 
-        byte[] profilePictureArray = u.getProfilePicture();
+        byte[] profilePictureArray = u.getInAppProfilePicture();
 
-        if(profilePictureArray != null){
+        if (profilePictureArray != null) {
 
             Bitmap picture = BitmapFactory.decodeByteArray(profilePictureArray, 0,
                     profilePictureArray.length);
@@ -173,20 +176,24 @@ public class ProfileFragment extends Fragment{
         }
     }
 
-    public void updateProfilePicture(Intent data){
+    public void selectProfilePicture(Intent data) {
+
         Uri selectedImage = data.getData();
 
         try {
 
-            Bitmap finalImage = General.getPortraitImage(selectedImage, getActivity());
-
+            Bitmap finalImage = General.getPortraitImage(selectedImage, getActivity(), 300, 200);
             profilePicture.setImageBitmap(finalImage);
 
-            /*Log.d("PortraitImage","rotationInDegrees: " + rotationInDegrees + " rotation: " + rotation
-             + " some exif value for 90: " +ExifInterface.ORIENTATION_ROTATE_90);*/
+            //http://stackoverflow.com/questions/26292969/can-i-store-image-files-in-firebase-using-java-api
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            finalImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            String imageString = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
 
-            //MainActivity.getUser().setProfilePicture();
+            MainActivity.getUser().setProfilePicture(imageString, stream.toByteArray());
 
-        } catch(IOException e){}
+            new FbDataChange("/users/" + MainActivity.getUser().getUid() +
+                    "/profilePicture", imageString).execute();
+        } catch (IOException e) {}
     }
 }

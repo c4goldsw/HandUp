@@ -28,4 +28,7 @@ public class Constants {
 
     //Activity result codes
     public static final int SELECT_IMAGE            = 0;
+
+    //Fire base related
+    public static final String FIRE_BASE_URL        = "https://intense-inferno-38.firebaseio.com";
 }

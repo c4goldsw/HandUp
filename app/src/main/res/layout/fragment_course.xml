@@ -1,7 +1,24 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.handup.handup.controller.CourseFragment">
 
-</FrameLayout>
+    <ScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/fragment_course_footer"
+        android:layout_height="48dp"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+        <!--<Button
+            android:id="@+id/fragment_course_add_course"
+            /> -->
+    </LinearLayout>
+
+</LinearLayout>

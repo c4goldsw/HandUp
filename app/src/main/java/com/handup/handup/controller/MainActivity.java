@@ -1,13 +1,11 @@
 package com.handup.handup.controller;
 
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
@@ -41,11 +39,7 @@ import com.handup.handup.model.LsQueryTask;
 import com.handup.handup.model.StateManager;
 import com.handup.handup.model.User;
 import com.handup.handup.view.SectionsPagerAdapter;
-import com.pearson.pdn.learningstudio.core.AbstractService;
-import com.pearson.pdn.learningstudio.core.BasicService;
-import com.pearson.pdn.learningstudio.core.Response;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -100,7 +94,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     /**
      * Used to keep track of the number of tabs
      */
-    public static final int tabCount = 3;
+    public static final int tabCount = 2;
 
     /**
      * An array of Drawables containing each icon used in the tabs
@@ -274,13 +268,15 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         icons[0].setAlpha(255); // set to 255 as this is the initial tab
         icons[0].setColorFilter(ContextCompat.getColor(this, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
-        icons[1] = ContextCompat.getDrawable(this, R.drawable.ic_people_24dp);
+        //Used to be in position two
+        icons[1] = ContextCompat.getDrawable(this, R.drawable.ic_acount_box_24dp);
         icons[1].setAlpha(77);
 
-        icons[2] = ContextCompat.getDrawable(this, R.drawable.ic_acount_box_24dp);
-        icons[2].setAlpha(77);
 
-        /*icons[3] = ContextCompat.getDrawable(this, R.drawable.ic_search_24dp);
+        /*icons[1] = ContextCompat.getDrawable(this, R.drawable.ic_people_24dp);
+        icons[1].setAlpha(77);
+
+        icons[3] = ContextCompat.getDrawable(this, R.drawable.ic_search_24dp);
         icons[3].setAlpha(77);
 
         icons[4] = ContextCompat.getDrawable(this, R.drawable.ic_menu_24dp);
@@ -288,7 +284,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
         tabLayout.getTabAt(0).setIcon(icons[0]);
         tabLayout.getTabAt(1).setIcon(icons[1]);
-        tabLayout.getTabAt(2).setIcon(icons[2]);
+        //tabLayout.getTabAt(2).setIcon(icons[2]);
         //tabLayout.getTabAt(3).setIcon(icons[3]);
         //tabLayout.getTabAt(4).setIcon(icons[4]);
 
