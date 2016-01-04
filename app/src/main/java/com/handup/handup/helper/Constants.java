@@ -20,14 +20,16 @@ public class Constants {
 
     //Consstats related to the user state
     public static final String NO_ACTIVE_USER       = "";
-    public static final int MENUFRAGMENT_LOGOUT = 0;
-
-    //Constatns related to LearningStudio Queries
-    public static final int PROFILE_REQUEST         = 0;
+    public static final int MENUFRAGMENT_LOGOUT     = 0;
 
     //Activity result codes
     public static final int SELECT_IMAGE            = 0;
 
     //Fire base related
     public static final String FIRE_BASE_URL        = "https://intense-inferno-38.firebaseio.com";
+
+    //course fragment related
+    public static final String PUT_EXTRA_COURSE_NAME    = "courseName";
+    public static final String PUT_EXTRA_COURSE_ID      = "courseId";
+    public static final String PUT_EXTRA_USERNAME = "username";
 }

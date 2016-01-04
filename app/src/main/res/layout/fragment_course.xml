@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.handup.handup.controller.CourseFragment">
+    tools:context=".controller.main.CourseFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/fragment_course_list"

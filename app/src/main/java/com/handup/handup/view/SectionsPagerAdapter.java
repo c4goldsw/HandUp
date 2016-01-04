@@ -8,11 +8,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.handup.handup.controller.CourseFragment;
-import com.handup.handup.controller.GroupFragment;
-import com.handup.handup.controller.MainActivity;
-import com.handup.handup.controller.MenuFragment;
-import com.handup.handup.controller.ProfileFragment;
+import com.handup.handup.controller.main.CourseFragment;
+import com.handup.handup.controller.main.MainActivity;
+import com.handup.handup.controller.main.MenuFragment;
+import com.handup.handup.controller.main.ProfileFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

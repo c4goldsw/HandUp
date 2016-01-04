@@ -19,6 +19,12 @@ public class User {
     private String profilePicture;
     private byte[] inAppProfilePicture;
 
+    public void setInAppProfilePicture(byte[] inAppProfilePicture) {
+        this.inAppProfilePicture = inAppProfilePicture;
+    }
+
+    private String displayName;
+
     private int[] courses;
 
     private ArrayList<ArrayList<String>> contentAddresses;
@@ -84,5 +90,13 @@ public class User {
 
     public void setMeetingAddresses(ArrayList<ArrayList<String>> meetingAddresses) {
         this.meetingAddresses = meetingAddresses;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

@@ -34,6 +34,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.handup.handup.R;
+import com.handup.handup.controller.main.MainActivity;
 import com.handup.handup.model.StateManager;
 import com.pearson.pdn.learningstudio.oauth.*;
 import com.pearson.pdn.learningstudio.oauth.config.OAuthConfig;
