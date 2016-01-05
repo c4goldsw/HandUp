@@ -17,8 +17,13 @@ import android.widget.Button;
 import com.handup.handup.R;
 import com.handup.handup.controller.course.CourseActivity;
 import com.handup.handup.helper.Constants;
+import com.handup.handup.model.StateManager;
 import com.handup.handup.model.fbquery.User;
+import com.handup.handup.model.lsquery.Course;
 import com.handup.handup.view.CourseListAdapter;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Used to list courses that users have enrolled in on the app.  Clicking on a course leads to
@@ -29,10 +34,6 @@ import com.handup.handup.view.CourseListAdapter;
 public class CourseFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
-
-    //Views for the UI
-    private Button addCourse;
-    private Button removeCourse;
 
     //components for recycler view
     private RecyclerView mRecyclerView;
@@ -83,7 +84,8 @@ public class CourseFragment extends Fragment {
         Intent i = new Intent(getContext(), CourseActivity.class);
         i.putExtra(Constants.PUT_EXTRA_COURSE_NAME, courseName);
         i.putExtra(Constants.PUT_EXTRA_COURSE_ID, courseID);
-        i.putExtra(Constants.PUT_EXTRA_USERNAME, courseID);
+        i.putExtra(Constants.PUT_EXTRA_USERNAME, StateManager.getUserName(getContext()));
+        i.putExtra(Constants.PUT_EXTRA_UID, MainActivity.getUser().getUid());
         startActivity(i);
     }
 
@@ -118,10 +120,6 @@ public class CourseFragment extends Fragment {
         // Inflate the layout for this fragment
         View ui = inflater.inflate(R.layout.fragment_course, container, false);
 
-        //get UI components
-        addCourse = (Button) ui.findViewById(R.id.fragment_course_add_course);
-        removeCourse = (Button) ui.findViewById(R.id.fragment_course_remove_course);
-
         //set up the recycler view
         mRecyclerView = (RecyclerView) ui.findViewById(R.id.fragment_course_list);
         mRecyclerView.setHasFixedSize(true);
@@ -141,25 +139,11 @@ public class CourseFragment extends Fragment {
 
         User user = MainActivity.getUser();
 
-        Log.d("updateUI", "Being called!");
-
         //check to see if anythign if the user is null OR if we haven't switched to the activity yet
-        if(user == null || addCourse == null)
+        if(user == null || mRecyclerView == null )
             return;
 
         mAdapter.setCourseNames(MainActivity.getCourses());
         mAdapter.notifyDataSetChanged();
-
-        if(user.getCourses() != null && user.getCourses().length == 0) {
-            removeCourse.setEnabled(false);
-            removeCourse.setTextColor(Color.DKGRAY);
-        }else{
-            removeCourse.setEnabled(false);
-            removeCourse.setTextColor(getActivity().getResources().getColor(R.color.colorAccent));
-        }
     }
-
-
-
-
 }

@@ -30,8 +30,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:choiceMode="singleChoice"
-        android:divider="#ffffffff"
         android:dividerHeight="15dp"
+        android:divider="#00ffffff"
         android:padding="15dp"/>
 
 </LinearLayout>

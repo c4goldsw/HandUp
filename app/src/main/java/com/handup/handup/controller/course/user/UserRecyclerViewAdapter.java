@@ -1,5 +1,7 @@
 package com.handup.handup.controller.course.user;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,8 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.handup.handup.R;
-import com.handup.handup.controller.course.user.UserDisplayContent.UserDisplayItem;
+import com.handup.handup.model.fbquery.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,13 +21,15 @@ import java.util.List;
  */
 public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder> {
 
-    private final List<UserDisplayItem> mValues;
+    private ArrayList<User> mValues;
     private final UserFragment.OnListFragmentInteractionListener mListener;
 
-    public UserRecyclerViewAdapter(List<UserDisplayItem> items, UserFragment.OnListFragmentInteractionListener listener) {
+    public UserRecyclerViewAdapter(ArrayList<User> items, UserFragment.OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
+
+    public void addItem(User u){mValues.add(u);}
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -35,18 +40,24 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mNameView.setText(mValues.get(position).id);
-        holder.mPointsView.setText(mValues.get(position).content);
+
+
+        holder.mNameView.setText(mValues.get(position).getDisplayName());
+        holder.mPointsView.setText("Points: " + mValues.get(position).getPoints());
+
+        byte[] profilePictureArray = mValues.get(position).getInAppProfilePicture();
+
+        if (profilePictureArray != null) {
+
+            Bitmap picture = BitmapFactory.decodeByteArray(profilePictureArray, 0,
+                    profilePictureArray.length);
+            holder.mAvatarView.setImageBitmap(picture);
+        }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                }
+                if (null != mListener) {}
             }
         });
     }
@@ -62,8 +73,6 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         public final TextView mNameView;
         public final TextView mPointsView;
         public final ImageView mAvatarView;
-
-        public UserDisplayItem mItem;
 
         public ViewHolder(View view) {
             super(view);

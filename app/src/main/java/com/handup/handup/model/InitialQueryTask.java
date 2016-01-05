@@ -174,5 +174,4 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
 
         public void onInitialQueryFinish();
     }
-
 }

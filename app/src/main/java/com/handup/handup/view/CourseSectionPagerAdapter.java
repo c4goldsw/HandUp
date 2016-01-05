@@ -24,7 +24,7 @@ public class CourseSectionPagerAdapter extends FragmentPagerAdapter {
         if(position == 0){
             return UserFragment.newInstance();
         } else {
-            return ContentFragment.newInstance(2);
+            return ContentFragment.newInstance(1);
         }
     }
 

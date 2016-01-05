@@ -61,6 +61,26 @@
 
 
                 <TextView
+                    android:text="@string/level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:background="#00000000"
+                    android:textSize="16sp"
+                    android:padding="7dp"
+                    android:textColor="@color/colorAccent"/>
+
+                <TextView
+                    android:id="@+id/rank_card_level"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="#00000000"
+                    android:textSize="80sp"
+                    android:textColor="@color/colorAccent"/>
+
+                <TextView
                     android:id="@+id/rank_card_points"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -68,7 +88,7 @@
                     android:background="#00000000"
                     android:textSize="16sp"
                     android:padding="7dp"
-                    android:textColor="@color/colorAccent" />
+                    android:textColor="@color/colorAccent"/>
 
             </FrameLayout>
 

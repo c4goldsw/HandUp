@@ -20,9 +20,11 @@ import com.handup.handup.model.lsquery.LsQueryObject;
 import com.pearson.pdn.learningstudio.core.AbstractService;
 import com.pearson.pdn.learningstudio.core.BasicService;
 import com.pearson.pdn.learningstudio.core.Response;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -40,11 +42,11 @@ public class CourseUsersQueryTask extends AsyncTask<Void, Void, Void> {
     private String lsQuery;
 
     public CourseUsersQueryTask(int courseID, CourseUserQueryImplementer cu, String username,
-                                int userID){
+                                String userID){
         this.courseID = courseID;
         this.cu = cu;
         this.username = username;
-        this.userID = Integer.toString(userID);
+        this.userID = userID;
     }
 
     @Override
@@ -59,7 +61,11 @@ public class CourseUsersQueryTask extends AsyncTask<Void, Void, Void> {
             //====================== Get data from learning studio responses ======================
             Gson g  = new Gson();
 
-            ArrayList<User> users = getUsersFromJson(lsJsonResponse, g);
+            final ArrayList<User> users = getUsersFromJson(lsJsonResponse, g);
+            final HashMap<String, User> userTemp = new HashMap<>();
+            for(User u : users) {
+                userTemp.put(u.getUid(), u);
+            }
 
             //====================== Get data from FireBase ======================
             Firebase ref = new Firebase("https://intense-inferno-38.firebaseio.com/users");
@@ -75,7 +81,10 @@ public class CourseUsersQueryTask extends AsyncTask<Void, Void, Void> {
                         //============ Get send data to main activity, start updating UIs ============
                         User user = dataSnapshot.getValue(User.class);
 
-                        cu.onCourseUserQueryFinish(user);
+                        if(user != null){
+                            user.setDisplayName(userTemp.get(user.getUid()).getDisplayName());
+                            cu.onCourseUserQueryFinish(user);
+                        }
                     }
 
                     @Override

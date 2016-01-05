@@ -10,7 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.handup.handup.R;
-import com.handup.handup.controller.course.user.UserDisplayContent.UserDisplayItem;
+import com.handup.handup.model.fbquery.User;
+
+import java.util.ArrayList;
 
 /**
  * A fragment representing a list of Items.
@@ -33,7 +35,6 @@ public class UserFragment extends Fragment {
     public UserFragment() {
     }
 
-
     public static UserFragment newInstance() {
         UserFragment fragment = new UserFragment();
         Bundle args = new Bundle();
@@ -44,7 +45,7 @@ public class UserFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mListener.onListFragmentInteraction(this);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class UserFragment extends Fragment {
             mRecyclerView = (RecyclerView) view;
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-            mRecyclerViewAdapater = new UserRecyclerViewAdapter(UserDisplayContent.ITEMS,
+            mRecyclerViewAdapater = new UserRecyclerViewAdapter(new ArrayList<User>(),
                     mListener);
 
             mRecyclerView.setAdapter(mRecyclerViewAdapater);
@@ -66,12 +67,20 @@ public class UserFragment extends Fragment {
         return view;
     }
 
-
     public void updateUI(){
-
 
         if(mRecyclerView != null){
 
+            mRecyclerViewAdapater.notifyDataSetChanged();
+        }
+    }
+
+    public void updateUI(User u){
+
+        if(mRecyclerView != null){
+
+            mRecyclerViewAdapater.addItem(u);
+            mRecyclerViewAdapater.notifyDataSetChanged();
         }
     }
 
@@ -104,6 +113,6 @@ public class UserFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
 
-        void onListFragmentInteraction(UserDisplayItem item);
+        void onListFragmentInteraction(UserFragment userFragment);
     }
 }

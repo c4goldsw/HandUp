@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.handup.handup.R;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
+import com.handup.handup.helper.LevelPicker;
 import com.handup.handup.model.fbquery.FbDataChange;
 import com.handup.handup.model.fbquery.User;
 
@@ -38,6 +39,7 @@ public class ProfileFragment extends Fragment {
 
     private TextView userName;
     private TextView points;
+    private TextView level;
     private ImageView profilePicture;
 
     private CardView profileCard;
@@ -95,6 +97,8 @@ public class ProfileFragment extends Fragment {
                         Constants.SELECT_IMAGE);
             }
         });
+
+        level = (TextView) ui.findViewById(R.id.rank_card_level);
 
         updateUI();
 
@@ -157,6 +161,7 @@ public class ProfileFragment extends Fragment {
         }
 
         points.setText("Points: " + u.getPoints());
+        level.setText("" + LevelPicker.levelPicker(u.getPoints()));
         userName.setText(MainActivity.getMeRequest().getMe().getFirstName());
 
         byte[] profilePictureArray = u.getInAppProfilePicture();
@@ -166,6 +171,8 @@ public class ProfileFragment extends Fragment {
             Bitmap picture = BitmapFactory.decodeByteArray(profilePictureArray, 0,
                     profilePictureArray.length);
             profilePicture.setImageBitmap(picture);
+        }else{
+            profilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_mood_24dp));
         }
     }
 

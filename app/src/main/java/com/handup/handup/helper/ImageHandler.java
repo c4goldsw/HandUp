@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Base64;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -113,4 +114,12 @@ public class ImageHandler {
         return cursor.getString(column_index);
     }
 
+
+    public static String getImageString(Bitmap finalImage){
+
+        //http://stackoverflow.com/questions/26292969/can-i-store-image-files-in-firebase-using-java-api
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        finalImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
+    }
 }

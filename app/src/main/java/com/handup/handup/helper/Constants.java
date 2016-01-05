@@ -32,4 +32,5 @@ public class Constants {
     public static final String PUT_EXTRA_COURSE_NAME    = "courseName";
     public static final String PUT_EXTRA_COURSE_ID      = "courseId";
     public static final String PUT_EXTRA_USERNAME = "username";
+    public static final String PUT_EXTRA_UID = "uid";
 }
