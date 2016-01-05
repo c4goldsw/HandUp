@@ -11,8 +11,7 @@ Hand Up assumes that the course instructor will not be involved in maintaining a
 Students on Hand Up will have their own simple, customizable profiles and ranks based off the number of points they have.  The aim of awarding points and encouraging social interaction through the application is to make its use more enjoyable.  I'm taking inspiration from Memrise, a memorization application that awards points for taking memory tests.  What I find so appealing about Memrise is that it awards points to users for simply engaging in one of their tests.  Users earn ranks based off the number of points they have, and have customizable profiles which may be followed by other users.  I’m confident that, given there is enough initial interest in the application, a sustainable user base can be made by basing Hand Up off this model.
 It should finally be recognized that – because of the decentralized nature of Hand Up - the app’s point system is vulnerable to manipulation by students.  I’m attempting to minimize this manipulation using the verification methods mentioned above.  Also, given the nature of the app as an educational aid, I doubt many users would have the motivation to carry out any manipulation.
 
-##
-Attribution:
+## Attribution:
 
 Title Image
 
