@@ -18,7 +18,7 @@ import android.view.MenuItem;
 
 import com.firebase.client.Firebase;
 import com.handup.handup.R;
-import com.handup.handup.controller.LoginActivity;
+import com.handup.handup.controller.login.LoginActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.lsquery.Course;
 import com.handup.handup.model.lsquery.LsQueryObject;
@@ -67,7 +67,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     /**
      * Used to keep track of the number of tabs
      */
-    public static final int tabCount = 3;
+    public static final int tabCount = 4;
 
     /**
      * An array of Drawables containing each icon used in the tabs
@@ -134,7 +134,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
      * This method is called when an LsQueryObject finishes from the async query task
      */
     @Override
-    public void onInitialQueryFinish() {
+    public void updateFragmentUIs() {
 
         /*TODO: I don't know, but this could end up being VERY dangerous ... consider removing*/
         if(profileFragment != null)
@@ -209,16 +209,19 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         icons[0].setAlpha(255); // set to 255 as this is the initial tab
         icons[0].setColorFilter(ContextCompat.getColor(this, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
-        //Used to be in position two
-        icons[1] = ContextCompat.getDrawable(this, R.drawable.ic_acount_box_24dp);
+        icons[1] = ContextCompat.getDrawable(this, R.drawable.ic_alarm_24dp);
         icons[1].setAlpha(77);
 
-        icons[2] = ContextCompat.getDrawable(this, R.drawable.ic_menu_24dp);
+        icons[2] = ContextCompat.getDrawable(this, R.drawable.ic_acount_box_24dp);
         icons[2].setAlpha(77);
+
+        icons[3] = ContextCompat.getDrawable(this, R.drawable.ic_menu_24dp);
+        icons[3].setAlpha(77);
 
         tabLayout.getTabAt(0).setIcon(icons[0]);
         tabLayout.getTabAt(1).setIcon(icons[1]);
         tabLayout.getTabAt(2).setIcon(icons[2]);
+        tabLayout.getTabAt(3).setIcon(icons[3]);
 
     }
 

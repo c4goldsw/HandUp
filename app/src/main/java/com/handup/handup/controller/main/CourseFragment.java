@@ -21,6 +21,7 @@ import com.handup.handup.model.StateManager;
 import com.handup.handup.model.fbquery.User;
 import com.handup.handup.model.lsquery.Course;
 import com.handup.handup.view.CourseListAdapter;
+import com.handup.handup.view.RecyclerItemDivider;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -126,6 +127,7 @@ public class CourseFragment extends Fragment {
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
+        //mRecyclerView.addItemDecoration(new RecyclerItemDivider(getActivity()));
 
         mAdapter = new CourseListAdapter(MainActivity.getCourses(), this);
         mRecyclerView.setAdapter(mAdapter);

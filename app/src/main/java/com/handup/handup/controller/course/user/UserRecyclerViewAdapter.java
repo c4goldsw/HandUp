@@ -2,6 +2,9 @@ package com.handup.handup.controller.course.user;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,20 +14,20 @@ import android.widget.TextView;
 
 import com.handup.handup.R;
 import com.handup.handup.model.fbquery.User;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link UserDisplayItem} and makes a call to the
- * specified {@link UserFragment.OnListFragmentInteractionListener}.
+ * specified {@link UserFragment.UserListFragmentInteractionListener}.
  */
 public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder> {
 
     private ArrayList<User> mValues;
-    private final UserFragment.OnListFragmentInteractionListener mListener;
+    private final UserFragment.UserListFragmentInteractionListener mListener;
 
-    public UserRecyclerViewAdapter(ArrayList<User> items, UserFragment.OnListFragmentInteractionListener listener) {
+    public UserRecyclerViewAdapter(ArrayList<User> items, UserFragment.UserListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -51,7 +54,12 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
             Bitmap picture = BitmapFactory.decodeByteArray(profilePictureArray, 0,
                     profilePictureArray.length);
-            holder.mAvatarView.setImageBitmap(picture);
+
+            RoundedBitmapDrawable profPic = RoundedBitmapDrawableFactory
+                    .create(mListener.getActivityContext().getResources(), picture);
+            profPic.setCircular(true);
+
+            holder.mAvatarView.setImageDrawable(profPic);
         }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {

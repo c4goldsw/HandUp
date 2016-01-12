@@ -42,6 +42,8 @@ public class GetLectureTimes extends AsyncTask<Void, Void, Void>{
                     childIt.hasNext();){
 
                     times.add(ContentTimeDeterminer.getTimeFromString((String) childIt.next().getValue()));
+
+                    Log.d("LectureTimes",times.get(times.size() - 1).toString());
                 }
 
                 user.onLectureTimeGetFinish(times);

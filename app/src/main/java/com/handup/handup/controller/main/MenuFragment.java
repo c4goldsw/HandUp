@@ -1,6 +1,7 @@
 package com.handup.handup.controller.main;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -60,16 +61,20 @@ public class MenuFragment extends Fragment {
         // Inflate the layout for this fragment
         View ui = inflater.inflate(R.layout.fragment_menu, container, false);
 
+        //set up the nav bar and the list view inside of  it
+        String[] options = {"Logout", "Settings", "Help", "About"};
+        Drawable[] menuIcons = {getActivity().getResources().getDrawable(R.drawable.ic_logout_24dp),
+        getActivity().getResources().getDrawable(R.drawable.ic_settings_24dp),
+        getActivity().getResources().getDrawable(R.drawable.ic_help_24dp),
+        getActivity().getResources().getDrawable(R.drawable.ic_stars_24dp),
+        };
 
-         //set up the nav bar and the list view inside of  it
-         String[] options = {"Logout", "Help", "About"};
+        menuList = (ListView) ui.findViewById(R.id.menu_list);
 
-         menuList = (ListView) ui.findViewById(R.id.menu_list);
+        menuList.setAdapter(new ArrayAdapter<String>(getContext(), R.layout.menu_item
+             , R.id.menu_list_text, options));
 
-         menuList.setAdapter(new ArrayAdapter<String>(getContext(), R.layout.menu_item
-                 , R.id.nav_drawer_text_view, options));
-
-         menuList.setOnItemClickListener(new MenuListClickListener());
+        menuList.setOnItemClickListener(new MenuListClickListener());
 
         return ui;
     }

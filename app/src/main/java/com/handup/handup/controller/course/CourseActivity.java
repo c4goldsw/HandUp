@@ -2,13 +2,11 @@ package com.handup.handup.controller.course;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -30,16 +28,14 @@ import com.handup.handup.model.FbContentPushTask;
 import com.handup.handup.model.GetLectureTimes;
 import com.handup.handup.model.fbquery.User;
 import com.handup.handup.view.CourseSectionPagerAdapter;
-import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class CourseActivity extends AppCompatActivity implements UserFragment.OnListFragmentInteractionListener,
+public class CourseActivity extends AppCompatActivity implements UserFragment.UserListFragmentInteractionListener,
         ContentFragment.OnListFragmentInteractionListener, CourseUsersQueryTask.CourseUserQueryImplementer,
         GetLectureTimes.OnLectureTimeGetFinish{
 
@@ -69,12 +65,14 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.On
 
     private ArrayList<User> users = new ArrayList<>();
 
-    private ArrayList<Date> submitTimes;
+    private ArrayList<Date> lectureTimes;
 
     private int numberOfPeers;
     private int peerCounter = 0;
 
     private UserFragment userFragment;
+
+    private Date selectedLecture;
 
     /*===========================================================================================
     Model/ Controller methods
@@ -104,40 +102,71 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.On
             }
         });
 
-        //new GetLectureTimes(Integer.toString(courseID), this).execute();
+        Firebase.setAndroidContext(this);
+
+        new GetLectureTimes(Integer.toString(courseID), this).execute();
         new CourseUsersQueryTask(courseID, this, username, uid).execute();
     }
 
+    //TODO: change currentTimeMillis to something better...
     private void submitContent(View view){
 
-        if(submitTimes == null){
+        if(lectureTimes == null) {
             Snackbar.make(view, "Still loading", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+
             return;
         }
 
         //if we're in range of one of the submission dates, submit
-        for(Date time: submitTimes){
+        for(Date time: lectureTimes){
             //Day to millisecond conversion: http://stackoverflow.com/questions/6980376/convert-from-days-to-milliseconds
-            if(time.getTime() < System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
-                    && System.currentTimeMillis() < time.getTime()){
-                startActivityForResult(new Intent(Intent.ACTION_PICK,
-                                android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
-                        Constants.SELECT_IMAGE);
+            if(time.getTime() < System.currentTimeMillis() && System.currentTimeMillis() < time.getTime()
+                     + TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)){
+
+                selectedLecture = time;
+                Log.d("FbContentPush",selectedLecture.toString());
+                startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        , Constants.TAKE_PHOTO);
             }
         }
-    }
 
+        Snackbar.make(view, "Content submission closed, try again on ...", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+    }
 
     //taken from http://bit.ly/1UmSnOi , on SO
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.SELECT_IMAGE)
-            if (resultCode == AppCompatActivity.RESULT_OK) {
 
-                new FbContentPushTask(data.getData(), uid, Integer.toString(courseID), this);
+        if (requestCode == Constants.TAKE_PHOTO && resultCode == AppCompatActivity.RESULT_OK) {
+
+            Calendar c = Calendar.getInstance();
+            c.setTime(selectedLecture);
+
+            try {
+                String imageString = ImageHandler.getImageString(ImageHandler.getPortraitImage(
+                        data.getData(), this, 500, 500));
+                new FbContentPushTask(imageString, uid, Integer.toString(courseID), this,
+                        Integer.toString(c.get(Calendar.DAY_OF_YEAR))).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedStateInstance){
+
+        savedStateInstance.putSerializable(Constants.DATE, selectedLecture);
+        super.onSaveInstanceState(savedStateInstance);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle b){
+
+        selectedLecture = (Date) b.getSerializable(Constants.DATE);
     }
 
     /*===========================================================================================
@@ -209,6 +238,11 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.On
     ===========================================================================================*/
 
     @Override
+    public Context getActivityContext() {
+        return this;
+    }
+
+    @Override
     public void onListFragmentInteraction(UserFragment userFragment) {
         this.userFragment = userFragment;
     }
@@ -227,7 +261,6 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.On
 
     @Override
     public void onLectureTimeGetFinish(ArrayList<Date> times) {
-        submitTimes = times;
+        lectureTimes = times;
     }
-
 }

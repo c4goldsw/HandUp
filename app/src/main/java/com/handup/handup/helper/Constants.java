@@ -24,6 +24,7 @@ public class Constants {
 
     //Activity result codes
     public static final int SELECT_IMAGE            = 0;
+    public static final int TAKE_PHOTO              = 2;
 
     //Fire base related
     public static final String FIRE_BASE_URL        = "https://intense-inferno-38.firebaseio.com";
@@ -33,4 +34,7 @@ public class Constants {
     public static final String PUT_EXTRA_COURSE_ID      = "courseId";
     public static final String PUT_EXTRA_USERNAME = "username";
     public static final String PUT_EXTRA_UID = "uid";
+
+    //Course Activity: User fragment related posts
+    public static final String DATE = "com.handup.handup.controller.course.date";
 }

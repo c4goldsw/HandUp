@@ -1,5 +1,7 @@
 package com.handup.handup.view;
 
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +13,8 @@ import com.handup.handup.R;
 import com.handup.handup.controller.main.CourseFragment;
 import com.handup.handup.controller.main.MainActivity;
 import com.handup.handup.model.lsquery.Course;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -41,19 +45,29 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Vi
     //refer to here for touching handling https://gist.github.com/grantland/cd70814fe4ac369e3e92
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        public TextView mTextView;
+        public TextView mCourseId;
+        public TextView mCourseDescription;
+        public TextView mCourseStats;
+        public int width;
+
         public int courseId;
 
         public ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            mTextView = (TextView) itemView;
+
+            if(itemView.getLayoutParams() != null) {
+                width = itemView.getLayoutParams().width;
+            }
+
+            mCourseId = (TextView) itemView.findViewById(R.id.course_list_code);
+            mCourseDescription = (TextView) itemView.findViewById(R.id.course_list_description);
+            mCourseStats = (TextView) itemView.findViewById(R.id.course_list_stats);
         }
 
         @Override
         public void onClick(View v) {
-            Log.d("List","being clicked");
-            courseFragment.startCourseActivity(courseId, mTextView.getText().toString());
+            courseFragment.startCourseActivity(courseId, mCourseId.getText().toString());
         }
     }
 
@@ -63,8 +77,6 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Vi
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.course_list_item, parent, false);
 
-
-
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
@@ -72,8 +84,11 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Vi
     @Override
     public void onBindViewHolder(CourseListAdapter.ViewHolder holder, int position) {
 
-        holder.mTextView.setText(courseNames.get(position).getName());
+        holder.mCourseId.setText(courseNames.get(position).getName());
         holder.courseId = MainActivity.getCourses().get(position).getId();
+        holder.mCourseDescription.setText(MainActivity.getCourses().get(position).getDescription());
+
+        holder.mCourseStats.setText(MainActivity.getCourses().get(position).getStats());
     }
 
     @Override

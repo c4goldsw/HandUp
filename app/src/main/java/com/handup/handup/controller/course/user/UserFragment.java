@@ -17,12 +17,12 @@ import java.util.ArrayList;
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link UserListFragmentInteractionListener}
  * interface.
  */
 public class UserFragment extends Fragment {
 
-    private OnListFragmentInteractionListener mListener;
+    private UserListFragmentInteractionListener mListener;
 
     RecyclerView mRecyclerView;
     UserRecyclerViewAdapter mRecyclerViewAdapater;
@@ -87,11 +87,11 @@ public class UserFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof UserListFragmentInteractionListener) {
+            mListener = (UserListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+                    + " must implement UserListFragmentInteractionListener");
         }
     }
 
@@ -111,8 +111,9 @@ public class UserFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnListFragmentInteractionListener {
+    public interface UserListFragmentInteractionListener {
 
+        Context getActivityContext();
         void onListFragmentInteraction(UserFragment userFragment);
     }
 }

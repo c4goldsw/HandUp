@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.handup.handup.controller.main.CourseFragment;
+import com.handup.handup.controller.main.GroupFragment;
 import com.handup.handup.controller.main.MainActivity;
 import com.handup.handup.controller.main.MenuFragment;
 import com.handup.handup.controller.main.ProfileFragment;
@@ -35,13 +36,13 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         if(position == 0) {
             return CourseFragment.newInstance();
         }
-       /* else if(position == 1){
+       else if(position == 1){
             return GroupFragment.newInstance();
-        }*/
-        else if(position == 1){//used to be 2
-            return ProfileFragment.newInstance();
         }
         else if(position == 2){
+            return ProfileFragment.newInstance();
+        }
+        else if(position == 3){
             return MenuFragment.newInstance();
         }
 

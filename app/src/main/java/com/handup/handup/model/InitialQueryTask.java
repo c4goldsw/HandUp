@@ -57,9 +57,9 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
-
         //====================== Get data from learning studio ======================
         HashMap<String, String> jsonResponses = new HashMap<>();
+
 
         jsonResponses = makeLsQueries(jsonResponses);
 
@@ -93,7 +93,7 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
 
                     MainActivity.setUser(user);
 
-                    usingClass.onInitialQueryFinish();
+                    usingClass.updateFragmentUIs();
                 }
 
                 @Override
@@ -132,6 +132,10 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
                 JsonObject course = courseTemp.get("course").getAsJsonObject();
                 c.setId(course.get("id").getAsInt());
                 c.setName(course.get("displayCourseCode").toString().replace("\"",""));
+                c.setDescription(course.get("title").toString().replace("\"",""));
+
+                //TODO: Change
+                c.setStats(0, 0);
 
                 courses.add(c);
             }
@@ -172,6 +176,6 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
 
     public interface InitialQueryUser {
 
-        public void onInitialQueryFinish();
+        public void updateFragmentUIs();
     }
 }

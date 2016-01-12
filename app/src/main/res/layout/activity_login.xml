@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".controller.LoginActivity">
+    tools:context=".controller.login.LoginActivity">
 
     <!-- Background -->
     <ImageView
@@ -27,7 +27,7 @@
         android:orientation="vertical"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        tools:context=".controller.LoginActivity">
+        tools:context=".controller.login.LoginActivity">
 
         <!-- Login progress -->
         <ProgressBar
