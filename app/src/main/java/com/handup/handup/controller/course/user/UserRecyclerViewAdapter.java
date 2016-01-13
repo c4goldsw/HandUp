@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,12 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
             profPic.setCircular(true);
 
             holder.mAvatarView.setImageDrawable(profPic);
+
+            Log.d("UserRecycler", "User: " + holder.mNameView.getText() + " " + profilePictureArray.toString());
+        }
+        else{
+            holder.mAvatarView.setImageDrawable(mListener.getActivityContext().getResources()
+                    .getDrawable(R.drawable.ic_mood_24dp));
         }
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +95,8 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
             mNameView = (TextView) view.findViewById(R.id.name);
             mPointsView = (TextView) view.findViewById(R.id.points);
             mAvatarView = (ImageView) view.findViewById(R.id.avatar);
+
+            mAvatarView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         }
 
         @Override
