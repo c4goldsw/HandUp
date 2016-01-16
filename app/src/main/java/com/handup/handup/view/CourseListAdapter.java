@@ -1,9 +1,6 @@
 package com.handup.handup.view;
 
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +9,7 @@ import android.widget.TextView;
 import com.handup.handup.R;
 import com.handup.handup.controller.main.CourseFragment;
 import com.handup.handup.controller.main.MainActivity;
-import com.handup.handup.model.lsquery.Course;
-
-import org.w3c.dom.Text;
+import com.handup.handup.model.Course;
 
 import java.util.ArrayList;
 

@@ -2,6 +2,7 @@ package com.handup.handup.controller.course;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -23,10 +24,12 @@ import com.handup.handup.controller.course.content.ContentFragment;
 import com.handup.handup.controller.course.user.UserFragment;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
+import com.handup.handup.model.Content;
+import com.handup.handup.model.ContentPullTask;
 import com.handup.handup.model.CourseUsersQueryTask;
-import com.handup.handup.model.FbContentPushTask;
+import com.handup.handup.model.ContentPushTask;
 import com.handup.handup.model.GetLectureTimes;
-import com.handup.handup.model.fbquery.User;
+import com.handup.handup.model.User;
 import com.handup.handup.view.CourseSectionPagerAdapter;
 
 import java.io.IOException;
@@ -36,8 +39,8 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class CourseActivity extends AppCompatActivity implements UserFragment.UserListFragmentInteractionListener,
-        ContentFragment.OnListFragmentInteractionListener, CourseUsersQueryTask.CourseUserQueryImplementer,
-        GetLectureTimes.OnLectureTimeGetFinish{
+        ContentFragment.OnContentFragmentInteractionListener, CourseUsersQueryTask.CourseUserQueryImplementer,
+        GetLectureTimes.OnLectureTimeGetFinish, ContentPullTask.ContentQueryImplementer{
 
     /*===========================================================================================
     Variables
@@ -71,6 +74,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     private int peerCounter = 0;
 
     private UserFragment userFragment;
+    private ContentFragment contentFragment;
 
     private Date selectedLecture;
 
@@ -106,6 +110,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
 
         new GetLectureTimes(Integer.toString(courseID), this).execute();
         new CourseUsersQueryTask(courseID, this, username, uid).execute();
+        new ContentPullTask(Integer.toString(courseID), uid, this).execute();
     }
 
     //TODO: change currentTimeMillis to something better...
@@ -146,10 +151,17 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
             c.setTime(selectedLecture);
 
             try {
-                String imageString = ImageHandler.getImageString(ImageHandler.getPortraitImage(
-                        data.getData(), this, 500, 500));
-                new FbContentPushTask(imageString, uid, Integer.toString(courseID), this,
+
+                Bitmap image = ImageHandler.getPortraitImage(
+                        data.getData(), this, 250, 259);
+
+                contentFragment.updateUI(new Content(image));
+
+                String imageString = ImageHandler.getImageString(image);
+
+                new ContentPushTask(imageString, uid, Integer.toString(courseID), this,
                         Integer.toString(c.get(Calendar.DAY_OF_YEAR))).execute();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -179,8 +191,9 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     private void setupTabs(){
 
         /* Create the adapter that will return a fragment for each of the three
-         primary sections of the activity. */
-        mSectionsPagerAdapter = new CourseSectionPagerAdapter(getSupportFragmentManager());
+         primary sections of the activity. We're sending it the screen dimensions for the
+         content section, which uses a grid list which needs to be size appropriately*/
+        mSectionsPagerAdapter = new CourseSectionPagerAdapter(getSupportFragmentManager(), this);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -243,14 +256,16 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     }
 
     @Override
-    public void onListFragmentInteraction(UserFragment userFragment) {
+    public void setUserFragment(UserFragment userFragment) {
         this.userFragment = userFragment;
     }
 
     @Override
-    public void onListFragmentInteraction(com.handup.handup.controller.course.content.DummyContent.DummyItem item) {
+    public void setContentFragment(ContentFragment contentFragment){ this.contentFragment = contentFragment; }
 
-    }
+    /*===========================================================================================
+    Query interaction methods
+    ===========================================================================================*/
 
     @Override
     public void onCourseUserQueryFinish(User u) {
@@ -262,5 +277,12 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     @Override
     public void onLectureTimeGetFinish(ArrayList<Date> times) {
         lectureTimes = times;
+    }
+
+    @Override
+    public void onContentQueryFinish(Content c) {
+
+        Log.d("ContentRequest","Adding More Content");
+        contentFragment.updateUI(c);
     }
 }

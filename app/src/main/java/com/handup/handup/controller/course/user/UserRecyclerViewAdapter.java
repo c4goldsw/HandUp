@@ -2,11 +2,9 @@ package com.handup.handup.controller.course.user;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.handup.handup.R;
-import com.handup.handup.model.fbquery.User;
-import com.squareup.picasso.Picasso;
+import com.handup.handup.model.User;
 
 import java.util.ArrayList;
 
@@ -61,8 +58,6 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
             profPic.setCircular(true);
 
             holder.mAvatarView.setImageDrawable(profPic);
-
-            Log.d("UserRecycler", "User: " + holder.mNameView.getText() + " " + profilePictureArray.toString());
         }
         else{
             holder.mAvatarView.setImageDrawable(mListener.getActivityContext().getResources()

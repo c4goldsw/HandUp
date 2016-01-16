@@ -22,7 +22,7 @@ import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
 import com.handup.handup.helper.LevelPicker;
 import com.handup.handup.model.fbquery.FbDataChange;
-import com.handup.handup.model.fbquery.User;
+import com.handup.handup.model.User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

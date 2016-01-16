@@ -13,14 +13,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import com.handup.handup.controller.main.MainActivity;
-import com.handup.handup.model.fbquery.User;
-import com.handup.handup.model.lsquery.Course;
 import com.handup.handup.model.lsquery.LsQueryObject;
 import com.pearson.pdn.learningstudio.core.AbstractService;
 import com.pearson.pdn.learningstudio.core.BasicService;
 import com.pearson.pdn.learningstudio.core.Response;
-import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;

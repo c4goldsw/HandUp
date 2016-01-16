@@ -2,29 +2,21 @@ package com.handup.handup.controller.main;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.handup.handup.R;
 import com.handup.handup.controller.course.CourseActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.StateManager;
-import com.handup.handup.model.fbquery.User;
-import com.handup.handup.model.lsquery.Course;
+import com.handup.handup.model.User;
 import com.handup.handup.view.CourseListAdapter;
-import com.handup.handup.view.RecyclerItemDivider;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 
 /**
  * Used to list courses that users have enrolled in on the app.  Clicking on a course leads to

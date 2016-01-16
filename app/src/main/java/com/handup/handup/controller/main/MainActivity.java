@@ -20,11 +20,11 @@ import com.firebase.client.Firebase;
 import com.handup.handup.R;
 import com.handup.handup.controller.login.LoginActivity;
 import com.handup.handup.helper.Constants;
-import com.handup.handup.model.lsquery.Course;
+import com.handup.handup.model.Course;
 import com.handup.handup.model.lsquery.LsQueryObject;
 import com.handup.handup.model.InitialQueryTask;
 import com.handup.handup.model.StateManager;
-import com.handup.handup.model.fbquery.User;
+import com.handup.handup.model.User;
 import com.handup.handup.model.lsquery.MeRequest;
 import com.handup.handup.view.SectionsPagerAdapter;
 

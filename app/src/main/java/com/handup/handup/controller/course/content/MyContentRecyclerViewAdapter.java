@@ -1,28 +1,29 @@
 package com.handup.handup.controller.course.content;
 
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.handup.handup.R;
-import com.handup.handup.controller.course.content.ContentFragment.OnListFragmentInteractionListener;
-import com.handup.handup.controller.course.content.DummyContent.DummyItem;
+import com.handup.handup.controller.course.content.ContentFragment.OnContentFragmentInteractionListener;
+import com.handup.handup.model.Content;
 
 import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
+ * specified {@link OnContentFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContentRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private List<Content> mValues;
+    private final OnContentFragmentInteractionListener mListener;
 
-    public MyContentRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyContentRecyclerViewAdapter(List<Content> items, OnContentFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -36,18 +37,18 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+
+        Bitmap content = mValues.get(position).getContentBitmap();
+        holder.mImageView.setImageBitmap(content);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
-                }
+            if (null != mListener) {
+                // Notify the active callbacks interface (the activity, if the
+                // fragment is attached to one) that an item has been selected.
+                //mListener.setUserFragment(holder.mItem);
+            }
             }
         });
     }
@@ -57,22 +58,19 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
         return mValues.size();
     }
 
+    public void addItem(Content content){
+
+        mValues.add(content);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
+        public ImageView mImageView;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            mImageView = (ImageView) view.findViewById(R.id.content_image);
         }
     }
 }

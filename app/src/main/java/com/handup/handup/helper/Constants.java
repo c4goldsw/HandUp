@@ -37,4 +37,5 @@ public class Constants {
 
     //Course Activity: User fragment related posts
     public static final String DATE = "com.handup.handup.controller.course.date";
+    public static final int ContentListBaseSize = 130;
 }

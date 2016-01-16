@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.handup.handup.R;
-import com.handup.handup.model.fbquery.User;
+import com.handup.handup.model.User;
 
 import java.util.ArrayList;
 
@@ -45,7 +45,7 @@ public class UserFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mListener.onListFragmentInteraction(this);
+        mListener.setUserFragment(this);
     }
 
     @Override
@@ -114,6 +114,6 @@ public class UserFragment extends Fragment {
     public interface UserListFragmentInteractionListener {
 
         Context getActivityContext();
-        void onListFragmentInteraction(UserFragment userFragment);
+        void setUserFragment(UserFragment userFragment);
     }
 }
