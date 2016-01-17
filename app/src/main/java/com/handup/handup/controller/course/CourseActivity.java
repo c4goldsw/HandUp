@@ -1,5 +1,6 @@
 package com.handup.handup.controller.course;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,6 +18,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 
 import com.firebase.client.Firebase;
 import com.handup.handup.R;
@@ -49,6 +54,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     private CourseSectionPagerAdapter mSectionsPagerAdapter;
 
     private ViewPager mViewPager;
+    private FloatingActionButton mFab;
 
     private int courseID;
     private String username;
@@ -60,6 +66,8 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
      * Used to keep track of the number of tabs
      */
     public static final int tabCount = 2;
+
+    private int currentTab = 0;
 
     /**
      * An array of Drawables containing each icon used in the tabs
@@ -97,12 +105,15 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
 
         setupTabs();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                submitContent(view);
+                if(currentTab == 0)
+                    ;
+                else if(currentTab == 1)
+                    submitContent(view);
             }
         });
 
@@ -203,7 +214,13 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
-            private int currentTab = 0;
+            private Drawable[] buttonIcons;
+            //Initializer
+            {
+                buttonIcons = new Drawable[2];
+                buttonIcons[0] = getResources().getDrawable(R.drawable.ic_alarm_24dp);
+                buttonIcons[1] = getResources().getDrawable(R.drawable.ic_camera_alt_24dp);
+            }
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -212,11 +229,44 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
 
             @Override
             public void onPageSelected(int position) {
+
+                //change color of tab icons
                 icons[currentTab].setAlpha(77);
                 icons[currentTab].setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
                 icons[position].setAlpha(255);
                 icons[position].setColorFilter(ContextCompat.getColor(c, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
                 currentTab = position;
+
+                //animate button: http://stackoverflow.com/questions/4689918/move-image-from-left-to-right-in-android
+                TranslateAnimation anim = new TranslateAnimation(0f, 0, 0, 300);
+                AccelerateDecelerateInterpolator adi = new AccelerateDecelerateInterpolator();
+                anim.setInterpolator(adi);
+                anim.setDuration(250);
+                anim.setRepeatMode(Animation.REVERSE);
+                anim.setRepeatCount(1);
+                anim.setAnimationListener(new Animation.AnimationListener() {
+
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                        if(currentTab == 0)
+                            mFab.setImageDrawable(buttonIcons[0]);
+                        else if(currentTab == 1)
+                            mFab.setImageDrawable(buttonIcons[1]);
+                    }
+                });
+
+                mFab.startAnimation(anim);
             }
 
             @Override
@@ -282,7 +332,6 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     @Override
     public void onContentQueryFinish(Content c) {
 
-        Log.d("ContentRequest","Adding More Content");
         contentFragment.updateUI(c);
     }
 }

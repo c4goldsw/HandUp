@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import com.handup.handup.R;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.Content;
+import com.handup.handup.view.RecyclerItemSpacing;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,11 @@ import java.util.ArrayList;
 public class ContentFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String ARG_SCREEN_DESNITY = "screen-desnity";
+
     private int mColumnCount = 1;
+    private float mDensity;
+
     private OnContentFragmentInteractionListener mListener;
 
     private RecyclerView mRecyclerView;
@@ -38,11 +43,12 @@ public class ContentFragment extends Fragment {
     public ContentFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    public static ContentFragment newInstance(float dpWidth) {
+    //TODO: Customize parameter initialization
+    public static ContentFragment newInstance(float dpWidth, float density){
         ContentFragment fragment = new ContentFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, (int) (dpWidth / Constants.ContentListBaseSize));
+        args.putFloat(ARG_SCREEN_DESNITY, density);
         fragment.setArguments(args);
 
         return fragment;
@@ -56,6 +62,7 @@ public class ContentFragment extends Fragment {
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            mDensity     = getArguments().getFloat(ARG_SCREEN_DESNITY);
         }
     }
 
@@ -72,12 +79,14 @@ public class ContentFragment extends Fragment {
             if (mColumnCount <= 1) {
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
-                mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                GridLayoutManager m = new GridLayoutManager(context, mColumnCount);
+                mRecyclerView.setLayoutManager(m);
             }
 
             mRecyclerViewAdapter = new MyContentRecyclerViewAdapter
                     (new ArrayList<Content>(), mListener);
 
+            mRecyclerView.addItemDecoration(new RecyclerItemSpacing( (int) (4*mDensity), mColumnCount));
             mRecyclerView.setAdapter(mRecyclerViewAdapter);
         }
 

@@ -44,6 +44,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_camera_alt_24dp" />
+        android:src="@drawable/ic_alarm_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

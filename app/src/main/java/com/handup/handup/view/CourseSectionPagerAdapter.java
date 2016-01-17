@@ -19,6 +19,7 @@ import com.handup.handup.helper.Constants;
 public class CourseSectionPagerAdapter extends FragmentPagerAdapter {
 
     private float dpWidth;
+    private float screenDensity;
 
     public CourseSectionPagerAdapter(FragmentManager fm, Context c) {
         super(fm);
@@ -27,6 +28,7 @@ public class CourseSectionPagerAdapter extends FragmentPagerAdapter {
             size and number of photo tiles accordingly*/
         DisplayMetrics dm = c.getResources().getDisplayMetrics();
         dpWidth = dm.widthPixels / dm.density;
+        screenDensity = dm.density;
     }
 
     @Override
@@ -39,7 +41,7 @@ public class CourseSectionPagerAdapter extends FragmentPagerAdapter {
             /*Here, we're dividing by the widht in dp by Constants.ContentListBaseSizee, that is,
             * the smallest size for each image tile.  Each tile will resized to fit the screen
             * seamlessly*/
-            return ContentFragment.newInstance(dpWidth);
+            return ContentFragment.newInstance(dpWidth, screenDensity);
         }
     }
 

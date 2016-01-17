@@ -2,6 +2,7 @@ package com.handup.handup.controller.course.content;
 
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,8 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
         Bitmap content = mValues.get(position).getContentBitmap();
         holder.mImageView.setImageBitmap(content);
+
+        holder.mView.getLayoutParams().height = holder.mView.getLayoutParams().width;
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
