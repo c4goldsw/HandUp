@@ -2,7 +2,6 @@ package com.handup.handup.controller.course.content;
 
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +21,13 @@ import java.util.List;
 public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContentRecyclerViewAdapter.ViewHolder> {
 
     private List<Content> mValues;
-    private final OnContentFragmentInteractionListener mListener;
+    private int mScreenWidth;
+    private int mColumnCount;
 
-    public MyContentRecyclerViewAdapter(List<Content> items, OnContentFragmentInteractionListener listener) {
+    public MyContentRecyclerViewAdapter(List<Content> items, int mScreenWidth, int mColumnCount) {
         mValues = items;
-        mListener = listener;
+        this.mScreenWidth = mScreenWidth;
+        this.mColumnCount = mColumnCount;
     }
 
     @Override
@@ -42,16 +43,13 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
         Bitmap content = mValues.get(position).getContentBitmap();
         holder.mImageView.setImageBitmap(content);
 
-        holder.mView.getLayoutParams().height = holder.mView.getLayoutParams().width;
+        //set the height of each item to be equal to it's width
+        holder.mImageView.getLayoutParams().height = (mScreenWidth - (4 + 4*mColumnCount)) /mColumnCount;
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            if (null != mListener) {
-                // Notify the active callbacks interface (the activity, if the
-                // fragment is attached to one) that an item has been selected.
-                //mListener.setUserFragment(holder.mItem);
-            }
+
             }
         });
     }

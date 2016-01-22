@@ -1,6 +1,5 @@
 package com.handup.handup.model;
 
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -31,6 +30,8 @@ public class ContentPullTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
+        Log.d("ContentPull","Starting");
+
         Firebase ref = new Firebase(Constants.FIRE_BASE_URL + "/content/" + uid +
                 "/" + courseID);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -51,6 +52,7 @@ public class ContentPullTask extends AsyncTask<Void, Void, Void> {
                     c.setApproved(approved);
                     c.setImage(imageString);
 
+                    Log.d("ContentPull","finished getting Content");
                     cu.onContentQueryFinish(c);
                 }
             }

@@ -124,7 +124,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         new ContentPullTask(Integer.toString(courseID), uid, this).execute();
     }
 
-    //TODO: change currentTimeMillis to something better...
+    //TODO: change currentTimeMillis to something system-time independent
     private void submitContent(View view){
 
         if(lectureTimes == null) {

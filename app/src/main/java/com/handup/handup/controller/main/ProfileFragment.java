@@ -18,14 +18,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.handup.handup.R;
+import com.handup.handup.controller.ContentDisplay;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
 import com.handup.handup.helper.LevelPicker;
+import com.handup.handup.model.Content;
+import com.handup.handup.model.ContentPullTask;
+import com.handup.handup.model.Course;
 import com.handup.handup.model.fbquery.FbDataChange;
 import com.handup.handup.model.User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,7 +40,7 @@ import java.io.IOException;
  * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements ContentPullTask.ContentQueryImplementer {
 
     private TextView userName;
     private TextView points;
@@ -78,8 +83,6 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View ui = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        Log.d("ProfileFragment", "onCreateView: starting!");
-
         //get UI views
         points = (TextView) ui.findViewById(R.id.rank_card_points);
         userName = (TextView) ui.findViewById(R.id.profile_card_name);
@@ -95,6 +98,26 @@ public class ProfileFragment extends Fragment {
                 startActivityForResult(new Intent(Intent.ACTION_PICK,
                                 android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),
                         Constants.SELECT_IMAGE);
+            }
+        });
+
+        contentCard.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+
+                Intent i = new Intent(getContext(), ContentDisplay.class);
+                i.putExtra(Constants.PUT_EXTRA_UID, MainActivity.getUser().getUid());
+
+                ArrayList<Course> courses = MainActivity.getCourses();
+                String[] courseIDs = new String[courses.size()];
+                for(int p = 0; p < courses.size(); ++p){
+                    courseIDs[p] = Integer.toString(courses.get(p).getId());
+                }
+
+                i.putExtra(Constants.PUT_EXTRA_COURSE_IDS,courseIDs);
+
+                startActivity(i);
             }
         });
 
@@ -120,6 +143,11 @@ public class ProfileFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onContentQueryFinish(Content c) {
+
     }
 
     /**

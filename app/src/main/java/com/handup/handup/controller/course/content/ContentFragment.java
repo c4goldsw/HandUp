@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +28,11 @@ public class ContentFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private static final String ARG_SCREEN_DESNITY = "screen-desnity";
+    private static final String ARG_SCREEN_WIDTH = "screen-width";
 
     private int mColumnCount = 1;
     private float mDensity;
+    private int mScreenWidth;
 
     private OnContentFragmentInteractionListener mListener;
 
@@ -47,8 +50,11 @@ public class ContentFragment extends Fragment {
     public static ContentFragment newInstance(float dpWidth, float density){
         ContentFragment fragment = new ContentFragment();
         Bundle args = new Bundle();
+
+        args.putInt(ARG_SCREEN_WIDTH, (int) (dpWidth*density));
         args.putInt(ARG_COLUMN_COUNT, (int) (dpWidth / Constants.ContentListBaseSize));
         args.putFloat(ARG_SCREEN_DESNITY, density);
+
         fragment.setArguments(args);
 
         return fragment;
@@ -63,6 +69,7 @@ public class ContentFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
             mDensity     = getArguments().getFloat(ARG_SCREEN_DESNITY);
+            mScreenWidth = getArguments().getInt(ARG_SCREEN_WIDTH);
         }
     }
 
@@ -84,7 +91,7 @@ public class ContentFragment extends Fragment {
             }
 
             mRecyclerViewAdapter = new MyContentRecyclerViewAdapter
-                    (new ArrayList<Content>(), mListener);
+                    (new ArrayList<Content>(), mScreenWidth, mColumnCount);
 
             mRecyclerView.addItemDecoration(new RecyclerItemSpacing( (int) (4*mDensity), mColumnCount));
             mRecyclerView.setAdapter(mRecyclerViewAdapter);
@@ -95,6 +102,7 @@ public class ContentFragment extends Fragment {
 
     public void updateUI(Content c){
 
+        Log.d("Recycler", "Updating UI in Content fragment!");
         if(mRecyclerViewAdapter != null){
 
             for(int i = 0; i < 20; ++i)

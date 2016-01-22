@@ -35,6 +35,9 @@ public class Constants {
     public static final String PUT_EXTRA_USERNAME = "username";
     public static final String PUT_EXTRA_UID = "uid";
 
+    //profile fragment related
+    public static final String PUT_EXTRA_COURSE_IDS="courseIdss";
+
     //Course Activity: User fragment related posts
     public static final String DATE = "com.handup.handup.controller.course.date";
     public static final int ContentListBaseSize = 130;
