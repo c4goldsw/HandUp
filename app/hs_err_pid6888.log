@@ -1,0 +1,82 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x000000006082ebb7, pid=6888, tid=13712
+#
+# JRE version:  (7.0_79-b15) (build )
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (24.79-b02 mixed mode windows-amd64 compressed oops)
+# Problematic frame:
+# V  [jvm.dll+0x1cebb7]
+#
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+# If you would like to submit a bug report, please visit:
+#   http://bugreport.java.com/bugreport/crash.jsp
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000000000dbd800):  JavaThread "Unknown thread" [_thread_in_vm, id=13712, stack(0x0000000002600000,0x0000000002700000)]
+
+siginfo: ExceptionCode=0xc0000005, writing address 0x00000000026f8f60
+
+Registers:
+RAX=0x00000000026f8f60, RBX=0x0000000000000007, RCX=0x0000000000006000, RDX=0x0000000002609158
+RSP=0x00000000026fef60, RBP=0x0000000000000000, RSI=0x00000000026fef60, RDI=0x0000000000000007
+R8 =0x0000000000000009, R9 =0x0000000000dbd800, R10=0x00000000026ff108, R11=0x00000000026ff120
+R12=0x00000000026ff120, R13=0x00000000026ff010, R14=0x00000000026ff130, R15=0x00000000028b0840
+RIP=0x000000006082ebb7, EFLAGS=0x0000000000010206
+
+Top of Stack: (sp=0x00000000026fef60)
+0x00000000026fef60:   00000000027a3b40 0000000000db8050
+0x00000000026fef70:   0000000000000005 0000000000000000
+0x00000000026fef80:   0000000000000000 000000006082f6fa
+0x00000000026fef90:   00000000026ff200 00000000027a3b40
+0x00000000026fefa0:   0000000000dbd800 0000000000dbd800
+0x00000000026fefb0:   00000000000003d8 00000000027a3b30
+0x00000000026fefc0:   00000000026ff0d0 00000000608a9338
+0x00000000026fefd0:   00000000bae1e501 0000000000dbd800
+0x00000000026fefe0:   0000000000000027 0000000000dbd800
+0x00000000026feff0:   0000000000dbd560 000000006085bbd4
+0x00000000026ff000:   0000003c2c6032e1 00000000027ab968
+0x00000000026ff010:   0000000000000000 00000000026ff320
+0x00000000026ff020:   00000000026ff0d0 00000000606adb65
+0x00000000026ff030:   0000000000000000 0000000000db8050
+0x00000000026ff040:   0000000000000001 00000000026ff500
+0x00000000026ff050:   0000000000000001 00000000027ea4f0 
+
+Instructions: (pc=0x000000006082ebb7)
+0x000000006082eb97:   48 89 6c 24 30 33 ed 66 90 e8 6b bb 07 00 ff c3
+0x000000006082eba7:   48 63 c8 48 8b c6 48 0f af cf 48 ff c7 48 2b c1
+0x000000006082ebb7:   89 28 48 63 c3 48 3b 05 75 db 52 00 7e db 48 8b
+0x000000006082ebc7:   6c 24 30 48 8b 5c 24 38 48 8b 74 24 40 48 83 c4 
+
+
+Register to memory mapping:
+
+RAX=0x00000000026f8f60 is pointing into the stack for thread: 0x0000000000dbd800
+RBX=0x0000000000000007 is an unknown value
+RCX=0x0000000000006000 is an unknown value
+RDX=0x0000000002609158 is pointing into the stack for thread: 0x0000000000dbd800
+RSP=0x00000000026fef60 is pointing into the stack for thread: 0x0000000000dbd800
+RBP=0x0000000000000000 is an unknown value
+RSI=0x00000000026fef60 is pointing into the stack for thread: 0x0000000000dbd800
+RDI=0x0000000000000007 is an unknown value
+R8 =0x0000000000000009 is an unknown value
+R9 =0x0000000000dbd800 is a thread
+R10=0x00000000026ff108 is pointing into the stack for thread: 0x0000000000dbd800
+R11=0x00000000026ff120 is pointing into the stack for thread: 0x0000000000dbd800
+R12=0x00000000026ff120 is pointing into the stack for thread: 0x0000000000dbd800
+R13=0x00000000026ff010 is pointing into the stack for thread: 0x0000000000dbd800
+R14=0x00000000026ff130 is pointing into the stack for thread: 0x0000000000dbd800
+R15=0x00000000028b0840 is at code_begin+0 in an Interpreter codelet
+method entry point (kind = zerolocals)  [0x00000000028b0840, 0x00000000028b0b40]  768 bytes
+
+
+Stack: [0x0000000002600000,0x0000000002700000],  sp=0x00000000026fef60,  free space=1019k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x1cebb7]
+
+[error occurred during error reporting (printing native stack), id 0xc0000005]
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Primary Color: Blue grey -->
+    <!-- Accent: Teal -->
+
+    <color name="colorPrimary">#607D8B</color> <!-- Blue Grey 500 -->
+    <color name="colorPrimaryDark">#455A64</color>  <!-- Blue Grey 700 -->
+    <color name="colorAccent">#009688</color> <!-- Teal 500 -->
+</resources>

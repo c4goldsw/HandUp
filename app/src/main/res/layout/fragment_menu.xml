@@ -1,0 +1,37 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="end"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@color/colorPrimaryDark">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/scrim_gradient_light"/>
+
+        <ImageView
+            android:layout_height="100dp"
+            android:layout_width="100dp"
+            android:src="@drawable/handup"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="50dp"/>
+
+
+    </FrameLayout>
+
+    <ListView android:id="@+id/menu_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:choiceMode="singleChoice"
+        android:dividerHeight="15dp"
+        android:divider="#00ffffff"
+        android:padding="15dp"/>
+
+</LinearLayout>

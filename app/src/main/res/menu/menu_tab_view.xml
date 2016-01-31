@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".controller.main.MainActivity">
+
+    <item
+        android:id="@+id/action_drawer_button"
+        android:title="@string/action_settings"
+        android:icon="@drawable/ic_menu_24dp"
+        app:showAsAction="ifRoom" />
+</menu>
