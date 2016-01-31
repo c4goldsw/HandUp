@@ -20,7 +20,6 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" >
 
 
-
         </android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
@@ -44,6 +43,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_alarm_24dp" />
+        android:src="@drawable/ic_alarm_24dp"/>
 
 </android.support.design.widget.CoordinatorLayout>
