@@ -2,6 +2,7 @@ package com.handup.handup.controller.main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -88,6 +89,8 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
      * This is the POJO that is used to store all firebase user queries
      */
     private static User user = new User();
+
+    private static Bitmap userContentPreview;
 
     private static ArrayList<Course> courses = new ArrayList<>();
 
@@ -279,6 +282,9 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
     public static User getUser(){return user;}
     public static void setUser(User u){user = u;};
+
+    public static Bitmap getUserContentPreview(){return userContentPreview;}
+    public static void setUserContentPrview(Bitmap u){userContentPreview = u;}
 
     public static ArrayList<Course> getCourses(){
 

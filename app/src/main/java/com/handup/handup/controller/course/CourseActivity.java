@@ -142,7 +142,6 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                      + TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)){
 
                 selectedLecture = time;
-                Log.d("FbContentPush",selectedLecture.toString());
                 startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                         , Constants.TAKE_PHOTO);
             }

@@ -46,6 +46,7 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
     private TextView points;
     private TextView level;
     private ImageView profilePicture;
+    private ImageView contentPicture;
 
     private CardView profileCard;
     private CardView contentCard;
@@ -87,6 +88,7 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
         points = (TextView) ui.findViewById(R.id.rank_card_points);
         userName = (TextView) ui.findViewById(R.id.profile_card_name);
         profilePicture = (ImageView) ui.findViewById(R.id.profile_card_picture);
+        contentPicture = (ImageView) ui.findViewById(R.id.content_card_picture);
 
         profileCard = (CardView) ui.findViewById(R.id.profile_card);
         contentCard = (CardView) ui.findViewById(R.id.content_card);
@@ -201,6 +203,11 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
             profilePicture.setImageBitmap(picture);
         }else{
             profilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_mood_24dp));
+        }
+
+        if(MainActivity.getUserContentPreview() != null){
+
+            contentPicture.setImageBitmap(MainActivity.getUserContentPreview());
         }
     }
 

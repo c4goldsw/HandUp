@@ -1,6 +1,8 @@
 package com.handup.handup.model;
 
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Base64;
 import android.util.Log;
 
 import com.firebase.client.DataSnapshot;
@@ -14,6 +16,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.handup.handup.controller.main.MainActivity;
+import com.handup.handup.helper.Constants;
+import com.handup.handup.helper.ImageHandler;
 import com.handup.handup.model.lsquery.LsQueryObject;
 import com.handup.handup.model.lsquery.MeRequest;
 import com.pearson.pdn.learningstudio.core.AbstractService;
@@ -97,6 +101,30 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
                 @Override
                 public void onCancelled(FirebaseError firebaseError) {
                     Log.d("FireBase", "Error:" + firebaseError);
+                }
+            });
+
+            Firebase getContentPrviewRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" +
+            MainActivity.getMeRequest().getMe().getId() + "/lastContent");
+
+            getContentPrviewRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    if(dataSnapshot.getValue() == null)
+                        return;
+
+                    byte[] imageBytes =  Base64.decode((String) dataSnapshot.getValue(), Base64.DEFAULT);
+                    MainActivity.setUserContentPrview(BitmapFactory.decodeByteArray(imageBytes, 0,
+                            imageBytes.length));
+
+                    usingClass.updateFragmentUIs();
+
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
                 }
             });
 

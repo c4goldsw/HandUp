@@ -63,6 +63,7 @@ public class MenuFragment extends Fragment {
 
         //set up the nav bar and the list view inside of  it
         String[] options = {"Logout", "Settings", "Help", "About"};
+
         Drawable[] menuIcons = {getActivity().getResources().getDrawable(R.drawable.ic_logout_24dp),
         getActivity().getResources().getDrawable(R.drawable.ic_settings_24dp),
         getActivity().getResources().getDrawable(R.drawable.ic_help_24dp),

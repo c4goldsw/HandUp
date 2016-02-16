@@ -39,15 +39,16 @@ public class ContentPushTask extends AsyncTask<Void, Void, Void>{
 
         Firebase ref = new Firebase(Constants.FIRE_BASE_URL + "/content/" + uid +
                  "/" + courseID + "/" + lectureDay);
-
         Firebase refImage = ref.child("image");
-
         refImage.setValue(imageString);
-
         Firebase refApproved = ref.child("approved");
             refApproved.setValue(false);
 
-        Log.d("ContentSubmit", "Pushed Photo");
+        //Storing an the image at a higher level so we can grab a preview for the profile page
+        //easily
+        ref = new Firebase(Constants.FIRE_BASE_URL + "/content/" + uid + "/lastContent");
+        ref.setValue(imageString);
+
 
         return null;
     }
