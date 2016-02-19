@@ -1,6 +1,7 @@
 package com.handup.handup.controller.course.content;
 
 import android.graphics.Bitmap;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +14,6 @@ import com.handup.handup.model.Content;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnContentFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContentRecyclerViewAdapter.ViewHolder> {
 
     private List<Content> mValues;
@@ -45,6 +41,7 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
         //set the height of each item to be equal to it's width
         holder.mImageView.getLayoutParams().height = (mScreenWidth - (4 + 4*mColumnCount)) /mColumnCount;
+        holder.mImageView.getLayoutParams().width = mScreenWidth - 16;
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +63,7 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
+        public CardView mCardView;
         public ImageView mImageView;
 
         public ViewHolder(View view) {

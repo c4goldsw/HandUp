@@ -45,13 +45,13 @@ public class RecyclerItemSpacing extends RecyclerView.ItemDecoration {
             outRect.left = dpSpacing/2;
         }
 
-        //TODO: add spacing to the bottom properly
-        int numberOfRows = parent.getAdapter().getItemCount() / columnCount;
-        /*if(1==1){
+        //add spacing to the bottom
+        int numberOfRows = (int) Math.ceil((double) parent.getAdapter().getItemCount() / columnCount);
+        if( parent.getChildLayoutPosition(view) + 1> ((numberOfRows - 1) * (columnCount))){
             outRect.bottom = dpSpacing;
         }
-        else{*/
+        else{
             outRect.bottom = dpSpacing/2;
-        //}
+        }
     }
 }

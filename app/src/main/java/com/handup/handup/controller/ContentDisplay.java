@@ -45,7 +45,7 @@ public class ContentDisplay extends AppCompatActivity implements ContentPullTask
         /*We need to determine the overall size of the screen.  We can then set the
             size and number of photo tiles accordingly*/
         DisplayMetrics dm = getResources().getDisplayMetrics();
-        int mColumnCount = (int) (dm.widthPixels / Constants.ContentListBaseSize);
+        int mColumnCount = /*(int) (dm.widthPixels / Constants.ContentListBaseSize)*/ 1;
 
         if (mColumnCount <= 1) {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -57,7 +57,7 @@ public class ContentDisplay extends AppCompatActivity implements ContentPullTask
         mRecyclerViewAdapter = new MyContentRecyclerViewAdapter(new ArrayList<Content>(),
                 dm.widthPixels, mColumnCount);
 
-        mRecyclerView.addItemDecoration(new RecyclerItemSpacing((int) (4 * dm.density), mColumnCount));
+        mRecyclerView.addItemDecoration(new RecyclerItemSpacing((int) (8 * dm.density), mColumnCount));
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
 
         for(String course : courses)
@@ -68,8 +68,7 @@ public class ContentDisplay extends AppCompatActivity implements ContentPullTask
 
         if(mRecyclerViewAdapter != null){
 
-            for(int i = 0; i < 20; ++i)
-                mRecyclerViewAdapter.addItem(c);
+            mRecyclerViewAdapter.addItem(c);
             mRecyclerViewAdapter.notifyDataSetChanged();
         }
     }

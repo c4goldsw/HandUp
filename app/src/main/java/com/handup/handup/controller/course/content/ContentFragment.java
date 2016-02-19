@@ -46,13 +46,12 @@ public class ContentFragment extends Fragment {
     public ContentFragment() {
     }
 
-    //TODO: Customize parameter initialization
-    public static ContentFragment newInstance(float dpWidth, float density){
+   public static ContentFragment newInstance(float dpWidth, float density){
         ContentFragment fragment = new ContentFragment();
         Bundle args = new Bundle();
 
         args.putInt(ARG_SCREEN_WIDTH, (int) (dpWidth*density));
-        args.putInt(ARG_COLUMN_COUNT, (int) (dpWidth / Constants.ContentListBaseSize));
+        args.putInt(ARG_COLUMN_COUNT, /*(int) (dpWidth / Constants.ContentListBaseSize)*/ 1);
         args.putFloat(ARG_SCREEN_DESNITY, density);
 
         fragment.setArguments(args);
@@ -93,7 +92,7 @@ public class ContentFragment extends Fragment {
             mRecyclerViewAdapter = new MyContentRecyclerViewAdapter
                     (new ArrayList<Content>(), mScreenWidth, mColumnCount);
 
-            mRecyclerView.addItemDecoration(new RecyclerItemSpacing( (int) (4*mDensity), mColumnCount));
+            mRecyclerView.addItemDecoration(new RecyclerItemSpacing( (int) (8*mDensity), mColumnCount));
             mRecyclerView.setAdapter(mRecyclerViewAdapter);
         }
 
@@ -102,11 +101,9 @@ public class ContentFragment extends Fragment {
 
     public void updateUI(Content c){
 
-        Log.d("Recycler", "Updating UI in Content fragment!");
         if(mRecyclerViewAdapter != null){
 
-            for(int i = 0; i < 20; ++i)
-                mRecyclerViewAdapter.addItem(c);
+            mRecyclerViewAdapter.addItem(c);
             mRecyclerViewAdapter.notifyDataSetChanged();
         }
     }
