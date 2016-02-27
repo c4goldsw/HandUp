@@ -15,10 +15,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.handup.handup.R;
+import com.handup.handup.controller.course.CourseActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.User;
 
 import java.util.ArrayList;
+
+import static com.handup.handup.helper.MiscFunctions.binarySearchArray;
 
 public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder> {
 
@@ -45,6 +48,7 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
         holder.mNameView.setText(mValues.get(position).getDisplayName());
         holder.mPointsView.setText("Points: " + mValues.get(position).getPoints());
+        holder.uid = mValues.get(position).getUid();
 
         byte[] profilePictureArray = mValues.get(position).getInAppProfilePicture();
 
@@ -84,6 +88,9 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         public final TextView mPointsView;
         public final ImageView mAvatarView;
 
+        //this uid is used to check to see if the app user is subscribed to this person or not
+        public String uid;
+
         public ViewHolder(View view) {
             super(view);
 
@@ -95,6 +102,7 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
             mAvatarView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             //TODO: for some reason, the listener for the entire view isn't called...
+            //this would make a good SO post
             mPointsView.setOnClickListener(this);
             mAvatarView.setOnClickListener(this);
             mNameView.setOnClickListener(this);
@@ -108,13 +116,28 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         @Override
         public void onClick(View v) {
 
-            //Taken from http://tinyurl.com/3xatjj5
-            Log.d(Constants.DEBUG_GENERAL, "Users have been clicked on");
-
-            DialogFragment newFragment = new SubscribeDialog();
             Bundle dialogInfo = new Bundle();
+
+            if(CourseActivity.subscriptionIDs == null){
+
+                Log.d(Constants.DEBUG_GENERAL, "Subscriptions not in yet");
+                return; //Subscription info hasn't been loaded yet
+            }
+            else if(binarySearchArray(CourseActivity.subscriptionIDs, Integer.parseInt(uid))){
+
+                Log.d(Constants.DEBUG_GENERAL, "Subscribed");
+                dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_SUBSCRIBED, true);
+            }else{
+
+                Log.d(Constants.DEBUG_GENERAL, "Not subscribed to " + uid);
+                dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_SUBSCRIBED, false);
+            }
+
+            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_UID, uid);
             dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_NAME, mNameView.getText().toString());
 
+            //Taken from http://tinyurl.com/3xatjj5
+            DialogFragment newFragment = new SubscribeDialog();
             newFragment.setArguments(dialogInfo);
             newFragment.show(mListener.getActivity().getFragmentManager(), "SubscribeDialog");
         }

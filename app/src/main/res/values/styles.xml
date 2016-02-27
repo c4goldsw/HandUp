@@ -60,4 +60,9 @@
         <item name="android:textColor">#ff000000</item>
     </style>
 
+    <!-- Profile fragment styles -->
+    <style name="ContentCard">
+
+    </style>
+
 </resources>

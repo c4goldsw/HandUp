@@ -64,7 +64,6 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Vi
 
         @Override
         public void onClick(View v) {
-            Log.d(Constants.DEBUG_GENERAL, "Clicked course!");
             courseFragment.startCourseActivity(courseId, mCourseId.getText().toString());
         }
     }

@@ -30,24 +30,22 @@ public class ContentPreviewQuery extends AsyncTask<Void, Void, Void>{
     protected Void doInBackground(Void... params) {
 
 
-        Firebase getContentPrviewRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" +
+        Firebase getContentPreviewRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" +
                 MainActivity.getMeRequest().getMe().getId() + "/lastContent");
 
 
-        getContentPrviewRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        getContentPreviewRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 Log.d("FireBase", "I'm called: " + dataSnapshot.getValue());
 
-                if(dataSnapshot.getValue() == null) {
+                if (dataSnapshot.getValue() == null) {
 
                     Log.d("FireBase", "Setting content preview to false: " + dataSnapshot.getValue());
                     MainActivity.setUserContentPrview(null);
-                }
-
-                else {
-                    byte[] imageBytes =  Base64.decode((String) dataSnapshot.getValue(), Base64.DEFAULT);
+                } else {
+                    byte[] imageBytes = Base64.decode((String) dataSnapshot.getValue(), Base64.DEFAULT);
                     MainActivity.setUserContentPrview(BitmapFactory.decodeByteArray(imageBytes, 0,
                             imageBytes.length));
                 }

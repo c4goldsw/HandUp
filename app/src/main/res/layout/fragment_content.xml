@@ -4,15 +4,25 @@
 
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:id="@+id/profile_card"
+    android:id="@+id/content_card"
     card_view:cardCornerRadius="3dp"
     card_view:cardElevation="4dp">
 
-    <ImageView
-        android:id="@+id/content_image"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:scaleType="centerCrop"
-        android:background="@color/colorAccent"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/content_image"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:scaleType="centerCrop"
+            android:background="@color/colorAccent"/>
+
+        <TextView
+            android:id="@+id/profile_card_name"
+            style="@style/ProfileCardText"/>
+
+    </FrameLayout>
 
 </android.support.v7.widget.CardView>

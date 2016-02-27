@@ -38,9 +38,11 @@ import com.handup.handup.model.CourseUsersQueryTask;
 import com.handup.handup.model.ContentPushTask;
 import com.handup.handup.model.GetLectureTimes;
 import com.handup.handup.model.User;
+import com.handup.handup.model.fbquery.GetSubscriptionTask;
 import com.handup.handup.view.CourseSectionPagerAdapter;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,7 +50,8 @@ import java.util.concurrent.TimeUnit;
 
 public class CourseActivity extends AppCompatActivity implements UserFragment.UserListFragmentInteractionListener,
         ContentFragment.OnContentFragmentInteractionListener, CourseUsersQueryTask.CourseUserQueryImplementer,
-        GetLectureTimes.OnLectureTimeGetFinish, ContentPullTask.ContentQueryImplementer{
+        GetLectureTimes.OnLectureTimeGetFinish, ContentPullTask.ContentQueryImplementer,
+        GetSubscriptionTask.GetSubscriptionTaskUser{
 
     /*===========================================================================================
     Variables
@@ -59,9 +62,9 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     private ViewPager mViewPager;
     private FloatingActionButton mFab;
 
-    private int courseID;
-    private String username;
-    private String uid;
+    private static int courseID;
+    private static String username;
+    private static String uid;
 
     private TabLayout tabLayout;
 
@@ -77,9 +80,10 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
      */
     private Drawable[] icons;
 
+    //The following arrays are used for business logic
     private ArrayList<User> users = new ArrayList<>();
-
     private ArrayList<Date> lectureTimes;
+    public static ArrayList<Integer> subscriptionIDs;
 
     private int numberOfPeers;
     private int peerCounter = 0;
@@ -115,7 +119,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
             public void onClick(View view) {
 
                 if(currentTab == 0) {
-                    //TODO: Add user connection functionality
+                    //TODO: Add user bluetooth connection functionality
 
                 }else if(currentTab == 1) {
                     submitContent(view);
@@ -128,6 +132,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         new GetLectureTimes(Integer.toString(courseID), this).execute();
         new CourseUsersQueryTask(courseID, this, username, uid).execute();
         new ContentPullTask(Integer.toString(courseID), uid, this).execute();
+        new GetSubscriptionTask(uid, Integer.toString(courseID), this).execute();
     }
 
     //TODO: change currentTimeMillis to something system-time independent
@@ -347,5 +352,34 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     public void onContentQueryFinish(Content c) {
 
         contentFragment.updateUI(c);
+    }
+
+    @Override
+    public void onGetSubscriptionFinish(ArrayList<String> subscriptionIDs) {
+
+        ArrayList<Integer> subIntIds = new ArrayList<>();
+        for(String s : subscriptionIDs){
+            subIntIds.add(Integer.parseInt(s));
+            Log.d(Constants.DEBUG_GENERAL, "Subscribed to " + subIntIds.get(subIntIds.size() - 1));
+        }
+
+        this.subscriptionIDs = subIntIds;
+    }
+
+
+    /*===========================================================================================
+    Getters and Setters
+    ===========================================================================================*/
+
+    public static int getCourseID() {
+        return courseID;
+    }
+
+    public static String getUsername() {
+        return username;
+    }
+
+    public static String getUid() {
+        return uid;
     }
 }

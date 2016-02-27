@@ -45,7 +45,11 @@ public class Constants {
     public static final int ContentListBaseSize = 130;
     public static final boolean ADDING_NEW_CONTENT = true;
     public static final boolean NOT_ADDING_NEW_CONTENT = false;
+
     public static final String DIALOG_BUNDLE_NAME = "name";
+    public static final String DIALOG_BUNDLE_SUBSCRIBED = "subscribed";
+    public static final String DIALOG_BUNDLE_UID = "uid";
+    public static final String DIALOG_BUNDLE_SUBID = "subId";
 
     //LOGCAT DEBUGGING
     public static final String DEBUG_GENERAL = "DEBUG_GEN";
