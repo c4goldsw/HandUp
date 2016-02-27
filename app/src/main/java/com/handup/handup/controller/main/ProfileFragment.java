@@ -208,6 +208,9 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
         if(MainActivity.getUserContentPreview() != null){
 
             contentPicture.setImageBitmap(MainActivity.getUserContentPreview());
+        }else{
+
+            contentPicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_assignment_24dp));
         }
     }
 

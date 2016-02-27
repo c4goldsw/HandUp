@@ -1,5 +1,6 @@
 package com.handup.handup.model;
 
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Base64;
@@ -15,6 +16,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.handup.handup.R;
 import com.handup.handup.controller.main.MainActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
@@ -107,16 +109,24 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
             Firebase getContentPrviewRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" +
             MainActivity.getMeRequest().getMe().getId() + "/lastContent");
 
+
             getContentPrviewRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    if(dataSnapshot.getValue() == null)
-                        return;
+                    Log.d("FireBase", "I'm called: " + dataSnapshot.getValue());
 
-                    byte[] imageBytes =  Base64.decode((String) dataSnapshot.getValue(), Base64.DEFAULT);
-                    MainActivity.setUserContentPrview(BitmapFactory.decodeByteArray(imageBytes, 0,
-                            imageBytes.length));
+                    if(dataSnapshot.getValue() == null) {
+
+                        Log.d("FireBase", "Setting content preview to false: " + dataSnapshot.getValue());
+                        MainActivity.setUserContentPrview(null);
+                    }
+
+                    else {
+                        byte[] imageBytes =  Base64.decode((String) dataSnapshot.getValue(), Base64.DEFAULT);
+                        MainActivity.setUserContentPrview(BitmapFactory.decodeByteArray(imageBytes, 0,
+                                imageBytes.length));
+                    }
 
                     usingClass.updateFragmentUIs();
 

@@ -284,7 +284,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     public static void setUser(User u){user = u;};
 
     public static Bitmap getUserContentPreview(){return userContentPreview;}
-    public static void setUserContentPrview(Bitmap u){userContentPreview = u;}
+    public static void setUserContentPrview(Bitmap u){userContentPreview = u; }
 
     public static ArrayList<Course> getCourses(){
 
