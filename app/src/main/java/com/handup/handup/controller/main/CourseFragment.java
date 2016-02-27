@@ -1,5 +1,6 @@
 package com.handup.handup.controller.main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import com.handup.handup.controller.course.CourseActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.StateManager;
 import com.handup.handup.model.User;
+import com.handup.handup.model.fbquery.ContentPreviewQuery;
 import com.handup.handup.view.CourseListAdapter;
 
 /**
@@ -79,7 +81,7 @@ public class CourseFragment extends Fragment {
         i.putExtra(Constants.PUT_EXTRA_COURSE_ID, courseID);
         i.putExtra(Constants.PUT_EXTRA_USERNAME, StateManager.getUserName(getContext()));
         i.putExtra(Constants.PUT_EXTRA_UID, MainActivity.getUser().getUid());
-        startActivity(i);
+        startActivityForResult(i, Constants.COURSE_ACT_FOR_RESULT);
     }
 
     /**
@@ -95,6 +97,14 @@ public class CourseFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void onCourseSelect(Uri uri);
         void setCourseFragment(CourseFragment f);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+
+        if(requestCode == Constants.COURSE_ACT_FOR_RESULT && resultCode == Constants.COURSE_ACT_CONTENT_ADDED){
+            new ContentPreviewQuery(MainActivity.getmActivity()).execute();
+        }
     }
 
     /*===========================================================================================

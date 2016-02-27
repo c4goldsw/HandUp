@@ -34,6 +34,8 @@ public class Constants {
     public static final String PUT_EXTRA_COURSE_ID      = "courseId";
     public static final String PUT_EXTRA_USERNAME = "username";
     public static final String PUT_EXTRA_UID = "uid";
+    public static final int COURSE_ACT_FOR_RESULT = 19;
+    public static final int COURSE_ACT_CONTENT_ADDED = 20;
 
     //profile fragment related
     public static final String PUT_EXTRA_COURSE_IDS="courseIdss";
@@ -41,4 +43,10 @@ public class Constants {
     //Course Activity: User fragment related posts
     public static final String DATE = "com.handup.handup.controller.course.date";
     public static final int ContentListBaseSize = 130;
+    public static final boolean ADDING_NEW_CONTENT = true;
+    public static final boolean NOT_ADDING_NEW_CONTENT = false;
+    public static final String DIALOG_BUNDLE_NAME = "name";
+
+    //LOGCAT DEBUGGING
+    public static final String DEBUG_GENERAL = "DEBUG_GEN";
 }

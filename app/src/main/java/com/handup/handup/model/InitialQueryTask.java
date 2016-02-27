@@ -20,6 +20,7 @@ import com.handup.handup.R;
 import com.handup.handup.controller.main.MainActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
+import com.handup.handup.model.fbquery.ContentPreviewQuery;
 import com.handup.handup.model.lsquery.LsQueryObject;
 import com.handup.handup.model.lsquery.MeRequest;
 import com.pearson.pdn.learningstudio.core.AbstractService;
@@ -97,6 +98,9 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
 
                     MainActivity.setUser(user);
 
+                    //now that the user ID has been set, we can load the preview image for the profile
+                    new ContentPreviewQuery(usingClass).execute();
+
                     usingClass.updateFragmentUIs();
                 }
 
@@ -106,37 +110,6 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
                 }
             });
 
-            Firebase getContentPrviewRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" +
-            MainActivity.getMeRequest().getMe().getId() + "/lastContent");
-
-
-            getContentPrviewRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    Log.d("FireBase", "I'm called: " + dataSnapshot.getValue());
-
-                    if(dataSnapshot.getValue() == null) {
-
-                        Log.d("FireBase", "Setting content preview to false: " + dataSnapshot.getValue());
-                        MainActivity.setUserContentPrview(null);
-                    }
-
-                    else {
-                        byte[] imageBytes =  Base64.decode((String) dataSnapshot.getValue(), Base64.DEFAULT);
-                        MainActivity.setUserContentPrview(BitmapFactory.decodeByteArray(imageBytes, 0,
-                                imageBytes.length));
-                    }
-
-                    usingClass.updateFragmentUIs();
-
-                }
-
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-
-                }
-            });
 
         } catch (JsonSyntaxException e) {
             Log.d("Async", "Error json: " + e);

@@ -97,6 +97,8 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     private ProfileFragment profileFragment;
     private CourseFragment courseFragment;
 
+    private static MainActivity mActivity;
+
     /*===========================================================================================
     Model / Controller related methods
     ===========================================================================================*/
@@ -108,6 +110,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         setContentView(R.layout.activity_main);
 
         Firebase.setAndroidContext(this);
+        mActivity = this;
 
         //before loading the main activity, we determine what state the user was last in
         determineState();
@@ -248,6 +251,8 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         return super.onOptionsItemSelected(item);
     }
 
+
+
     /*===========================================================================================
     Fragment listener methods
     ===========================================================================================*/
@@ -293,5 +298,9 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     public static void setCourses(ArrayList<Course> c){
 
         courses = c;
+    }
+
+    public static MainActivity getmActivity(){
+        return mActivity;
     }
 }

@@ -1,6 +1,8 @@
 package com.handup.handup.controller.course;
 
 import android.animation.Animator;
+import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -26,6 +28,7 @@ import android.view.animation.TranslateAnimation;
 import com.firebase.client.Firebase;
 import com.handup.handup.R;
 import com.handup.handup.controller.course.content.ContentFragment;
+import com.handup.handup.controller.course.user.SubscribeDialog;
 import com.handup.handup.controller.course.user.UserFragment;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
@@ -111,10 +114,12 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
             @Override
             public void onClick(View view) {
 
-                if(currentTab == 0)
-                    ;
-                else if(currentTab == 1)
+                if(currentTab == 0) {
+                    //TODO: Add user connection functionality
+
+                }else if(currentTab == 1) {
                     submitContent(view);
+                }
             }
         });
 
@@ -172,6 +177,10 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
 
                 new ContentPushTask(imageString, uid, Integer.toString(courseID), this,
                         Integer.toString(c.get(Calendar.DAY_OF_YEAR))).execute();
+
+                //this is done to indicate to the main activity that new content was added
+                //the content preview can then be updated accordingly
+                setResult(Constants.COURSE_ACT_CONTENT_ADDED);
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -308,6 +317,11 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     @Override
     public void setUserFragment(UserFragment userFragment) {
         this.userFragment = userFragment;
+    }
+
+    @Override
+    public Activity getActivity() {
+        return this;
     }
 
     @Override

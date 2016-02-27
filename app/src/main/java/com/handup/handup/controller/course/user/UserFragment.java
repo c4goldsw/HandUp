@@ -1,5 +1,6 @@
 package com.handup.handup.controller.course.user;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -115,5 +116,6 @@ public class UserFragment extends Fragment {
 
         Context getActivityContext();
         void setUserFragment(UserFragment userFragment);
+        Activity getActivity();
     }
 }

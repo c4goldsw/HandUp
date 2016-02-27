@@ -1,10 +1,13 @@
 package com.handup.handup.controller.course.user;
 
+import android.app.DialogFragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +15,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.handup.handup.R;
+import com.handup.handup.helper.Constants;
 import com.handup.handup.model.User;
 
 import java.util.ArrayList;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link UserDisplayItem} and makes a call to the
- * specified {@link UserFragment.UserListFragmentInteractionListener}.
- */
 public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder> {
 
     private ArrayList<User> mValues;
@@ -77,7 +77,7 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public final View mView;
         public final TextView mNameView;
@@ -86,17 +86,37 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
         public ViewHolder(View view) {
             super(view);
+
             mView = view;
             mNameView = (TextView) view.findViewById(R.id.name);
             mPointsView = (TextView) view.findViewById(R.id.points);
             mAvatarView = (ImageView) view.findViewById(R.id.avatar);
 
             mAvatarView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+            //TODO: for some reason, the listener for the entire view isn't called...
+            mPointsView.setOnClickListener(this);
+            mAvatarView.setOnClickListener(this);
+            mNameView.setOnClickListener(this);
         }
 
         @Override
         public String toString() {
             return super.toString() + " '" + mPointsView.getText() + "'";
+        }
+
+        @Override
+        public void onClick(View v) {
+
+            //Taken from http://tinyurl.com/3xatjj5
+            Log.d(Constants.DEBUG_GENERAL, "Users have been clicked on");
+
+            DialogFragment newFragment = new SubscribeDialog();
+            Bundle dialogInfo = new Bundle();
+            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_NAME, mNameView.getText().toString());
+
+            newFragment.setArguments(dialogInfo);
+            newFragment.show(mListener.getActivity().getFragmentManager(), "SubscribeDialog");
         }
     }
 }
