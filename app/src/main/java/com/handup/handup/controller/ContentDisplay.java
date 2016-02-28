@@ -50,7 +50,7 @@ public class ContentDisplay extends AppCompatActivity implements ContentPullTask
         }
 
         mRecyclerViewAdapter = new MyContentRecyclerViewAdapter(new ArrayList<Content>(),
-                dm.widthPixels, mColumnCount);
+                dm.widthPixels, mColumnCount, false);
 
         mRecyclerView.addItemDecoration(new RecyclerItemSpacing((int) (8 * dm.density), mColumnCount));
         mRecyclerView.setAdapter(mRecyclerViewAdapter);

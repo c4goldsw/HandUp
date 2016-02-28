@@ -37,7 +37,7 @@ public class ContentFragment extends Fragment {
     private OnContentFragmentInteractionListener mListener;
 
     private RecyclerView mRecyclerView;
-    private MyContentRecyclerViewAdapter mRecyclerViewAdapter;
+    public MyContentRecyclerViewAdapter mRecyclerViewAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -46,7 +46,7 @@ public class ContentFragment extends Fragment {
     public ContentFragment() {
     }
 
-   public static ContentFragment newInstance(float dpWidth, float density){
+    public static ContentFragment newInstance(float dpWidth, float density){
         ContentFragment fragment = new ContentFragment();
         Bundle args = new Bundle();
 
@@ -90,7 +90,7 @@ public class ContentFragment extends Fragment {
             }
 
             mRecyclerViewAdapter = new MyContentRecyclerViewAdapter
-                    (new ArrayList<Content>(), mScreenWidth, mColumnCount);
+                    (new ArrayList<Content>(), mScreenWidth, mColumnCount, true);
 
             mRecyclerView.addItemDecoration(new RecyclerItemSpacing( (int) (8*mDensity), mColumnCount));
             mRecyclerView.setAdapter(mRecyclerViewAdapter);

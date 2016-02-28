@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class User {
 
     private String uid;
-    private int points;
+    private long points;
 
     //profilePicture is only to be used for FireBase storage, whilst inAppProfilePicture
     //is for use in the app
@@ -52,11 +52,11 @@ public class User {
         this.uid = uid;
     }
 
-    public int getPoints() {
+    public long getPoints() {
         return points;
     }
 
-    public void setPoints(int points) {
+    public void setPoints(long points) {
         this.points = points;
     }
 

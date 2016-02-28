@@ -22,9 +22,13 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.handup.handup.R;
 import com.handup.handup.controller.course.content.ContentFragment;
+import com.handup.handup.controller.course.user.SubscribeDialog;
 import com.handup.handup.controller.course.user.UserFragment;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
@@ -42,12 +46,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 public class CourseActivity extends AppCompatActivity implements UserFragment.UserListFragmentInteractionListener,
         ContentFragment.OnContentFragmentInteractionListener, CourseUsersQueryTask.CourseUserQueryImplementer,
         GetLectureTimes.OnLectureTimeGetFinish, ContentPullTask.ContentQueryImplementer,
-        GetSubscriptionTask.GetSubscriptionTaskUser{
+        GetSubscriptionTask.GetSubscriptionTaskUser, SubscribeDialog.SubscribeDialogListener {
 
     /*===========================================================================================
     Variables
@@ -59,8 +64,10 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     private FloatingActionButton mFab;
 
     private static int courseID;
-    private static String username;
+    private static String userName;
+    private static String displayName;
     private static String uid;
+    private static String courseName;
 
     private TabLayout tabLayout;
 
@@ -103,9 +110,10 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         setSupportActionBar(toolbar);
 
         courseID = getIntent().getIntExtra(Constants.PUT_EXTRA_COURSE_ID, 0);
-        username = getIntent().getStringExtra(Constants.PUT_EXTRA_USERNAME);
+        userName = getIntent().getStringExtra(Constants.PUT_EXTRA_USERNAME);
         uid      = getIntent().getStringExtra(Constants.PUT_EXTRA_UID);
-        getSupportActionBar().setTitle(getIntent().getStringExtra(Constants.PUT_EXTRA_COURSE_NAME));
+        getSupportActionBar().setTitle(courseName = getIntent().getStringExtra(Constants.PUT_EXTRA_COURSE_NAME));
+        displayName = getIntent().getStringExtra(Constants.PUT_EXTRA_DISPLAY_NAME);
 
         setupTabs();
 
@@ -126,7 +134,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         Firebase.setAndroidContext(this);
 
         new GetLectureTimes(Integer.toString(courseID), this).execute();
-        new CourseUsersQueryTask(courseID, this, username, uid).execute();
+        new CourseUsersQueryTask(courseID, this, userName, uid).execute();
         new GetSubscriptionTask(uid, Integer.toString(courseID), this).execute();
     }
 
@@ -141,7 +149,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         }
 
         //if we're in range of one of the submission dates, submit
-        for(Date time: lectureTimes){
+        /*for(Date time: lectureTimes){
             //Day to millisecond conversion: http://stackoverflow.com/questions/6980376/convert-from-days-to-milliseconds
             if(time.getTime() < System.currentTimeMillis() && System.currentTimeMillis() < time.getTime()
                      + TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)){
@@ -150,7 +158,12 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                 startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                         , Constants.TAKE_PHOTO);
             }
-        }
+        }*/
+
+        //TODO: remove after finished testing
+        selectedLecture = lectureTimes.get(0);
+        startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                , Constants.TAKE_PHOTO);
 
         Snackbar.make(view, "Content submission closed, try again on ...", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
@@ -171,11 +184,15 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                 Bitmap image = ImageHandler.getPortraitImage(
                         data.getData(), this, 250, 259);
 
-                contentFragment.updateUI(new Content(image));
+                contentFragment.mRecyclerViewAdapter.removeItem(uid);
+
+                Content newContent = new Content(image);
+                newContent.setContentDescription(displayName);
+                contentFragment.updateUI(newContent);
 
                 String imageString = ImageHandler.getImageString(image);
 
-                new ContentPushTask(imageString, uid, Integer.toString(courseID), this,
+                new ContentPushTask(displayName, courseName, imageString, uid, Integer.toString(courseID), this,
                         Integer.toString(c.get(Calendar.DAY_OF_YEAR))).execute();
 
                 //this is done to indicate to the main activity that new content was added
@@ -327,6 +344,57 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     @Override
     public void setContentFragment(ContentFragment contentFragment){ this.contentFragment = contentFragment; }
 
+    @Override
+    public void removeUserFromContentFeed(String uid){
+
+        contentFragment.mRecyclerViewAdapter.removeItem(uid);
+        subscriptionIDs.remove(new Integer(Integer.parseInt(uid)));
+    }
+
+    @Override
+    public void addUserToContentFeed(final String uid){
+
+        Log.d(Constants.DEBUG_GENERAL, "attemping to add content");
+
+        Firebase contentRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" + uid + "/" +
+                getCourseID() + "/lastContent");
+        contentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Log.d(Constants.DEBUG_GENERAL, "Query returned: " + dataSnapshot.toString());
+
+                String imageString = (String) dataSnapshot.child("image").getValue();
+
+                //get each approval
+                ArrayList<Integer> approvals = new ArrayList<Integer>();
+                for(Iterator<DataSnapshot> approvalIt = dataSnapshot.child(Constants.CONTENT_APPROVALS).getChildren().iterator();
+                    approvalIt.hasNext();) {
+
+                    approvals.add(Integer.parseInt(approvalIt.next().getKey()));
+                }
+
+                Content c = new Content();
+                c.setApproved(approvals);
+                c.setOwner(Integer.parseInt(uid));
+                c.setImage(imageString);
+                c.setContentDescription((String) dataSnapshot.child(Constants.CONTENT_DESCRIPTION).getValue()
+                        + ", " + c.getApprovalCount() + ((c.getApprovalCount() == 1) ? " approve" : " approves"));
+
+                contentFragment.mRecyclerViewAdapter.addItem(c);
+                contentFragment.mRecyclerViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.d(Constants.DEBUG_FIREBASE, "CourseActivty, Add single content to feed after subscribing: " +
+                        firebaseError.toString());
+            }
+        });
+
+        CourseActivity.subscriptionIDs.add(Integer.parseInt(uid));
+    }
+
     /*===========================================================================================
     Query interaction methods
     ===========================================================================================*/
@@ -375,8 +443,8 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         return courseID;
     }
 
-    public static String getUsername() {
-        return username;
+    public static String getUserName() {
+        return userName;
     }
 
     public static String getUid() {

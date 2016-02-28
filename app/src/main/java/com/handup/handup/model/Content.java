@@ -12,10 +12,15 @@ import java.util.ArrayList;
 public class Content {
 
     private Bitmap contentBitmap;
-
     private String image;
-
     private ArrayList<Integer> approvals;
+    private String contentDescription;
+    private int approvalCount;
+    private int owner;
+
+    /* ======================================================================
+        Methods
+       ======================================================================*/
 
     public Content(){
 
@@ -26,12 +31,26 @@ public class Content {
         setContentBitmap(b);
     }
 
+    public int getOwner(){
+        return owner;
+    }
+
+    public void setOwner(int uid){
+        owner = uid;
+    }
+
+    public int getApprovalCount(){
+        return approvalCount;
+    }
+
     public ArrayList<Integer> getApprovals(){
         return approvals;
     }
 
     public void setApproved(ArrayList<Integer> approvals) {
         this.approvals = approvals;
+
+        approvalCount = this.approvals.size();
     }
 
     public Bitmap getContentBitmap() {
@@ -55,5 +74,12 @@ public class Content {
                 imageArray.length);
     }
 
+    public void setContentDescription(String description){
+        contentDescription = description;
+    }
 
+    public String getContentDescription(){
+
+        return  contentDescription;
+    }
 }

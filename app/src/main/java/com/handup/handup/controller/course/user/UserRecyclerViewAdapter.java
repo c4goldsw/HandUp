@@ -22,6 +22,7 @@ import com.handup.handup.model.User;
 import java.util.ArrayList;
 
 import static com.handup.handup.helper.MiscFunctions.binarySearchArray;
+import static com.handup.handup.helper.MiscFunctions.linearSearchArray;
 
 public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder> {
 
@@ -81,7 +82,7 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         public final View mView;
         public final TextView mNameView;
@@ -120,17 +121,14 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
             if(CourseActivity.subscriptionIDs == null){
 
-                Log.d(Constants.DEBUG_GENERAL, "Subscriptions not in yet");
                 return; //Subscription info hasn't been loaded yet
             }
             else if(binarySearchArray(CourseActivity.subscriptionIDs, Integer.parseInt(uid))){
 
-                Log.d(Constants.DEBUG_GENERAL, "Subscribed");
-                dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_SUBSCRIBED, true);
+                dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_BOOL_VAL, true);
             }else{
 
-                Log.d(Constants.DEBUG_GENERAL, "Not subscribed to " + uid);
-                dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_SUBSCRIBED, false);
+                dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_BOOL_VAL, false);
             }
 
             dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_UID, uid);

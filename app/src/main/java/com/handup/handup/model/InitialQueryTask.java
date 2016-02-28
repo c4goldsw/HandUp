@@ -1,9 +1,6 @@
 package com.handup.handup.model;
 
-import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Base64;
 import android.util.Log;
 
 import com.firebase.client.DataSnapshot;
@@ -16,11 +13,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import com.handup.handup.R;
 import com.handup.handup.controller.main.MainActivity;
-import com.handup.handup.helper.Constants;
-import com.handup.handup.helper.ImageHandler;
-import com.handup.handup.model.fbquery.ContentPreviewQuery;
+import com.handup.handup.model.fbquery.MainActivityReloadQuery;
 import com.handup.handup.model.lsquery.LsQueryObject;
 import com.handup.handup.model.lsquery.MeRequest;
 import com.pearson.pdn.learningstudio.core.AbstractService;
@@ -99,7 +93,7 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
                     MainActivity.setUser(user);
 
                     //now that the user ID has been set, we can load the preview image for the profile
-                    new ContentPreviewQuery(usingClass).execute();
+                    new MainActivityReloadQuery(usingClass).execute();
 
                     usingClass.updateFragmentUIs();
                 }

@@ -33,6 +33,7 @@ public class Constants {
     public static final String PUT_EXTRA_COURSE_NAME    = "courseName";
     public static final String PUT_EXTRA_COURSE_ID      = "courseId";
     public static final String PUT_EXTRA_USERNAME = "username";
+    public static final String PUT_EXTRA_DISPLAY_NAME = "display_name";
     public static final String PUT_EXTRA_UID = "uid";
     public static final int COURSE_ACT_FOR_RESULT = 19;
     public static final int COURSE_ACT_CONTENT_ADDED = 20;
@@ -47,13 +48,16 @@ public class Constants {
     public static final boolean NOT_ADDING_NEW_CONTENT = false;
 
     public static final String DIALOG_BUNDLE_NAME = "name";
-    public static final String DIALOG_BUNDLE_SUBSCRIBED = "subscribed";
+    public static final String DIALOG_BUNDLE_BOOL_VAL = "BOOL_VAL";
     public static final String DIALOG_BUNDLE_UID = "uid";
-    public static final String DIALOG_BUNDLE_SUBID = "subId";
+    public static final String DIALOG_BUNDLE_OID = "oid";
+    public static final String DIALOG_BUNDLE_COURSE_ID = "courseId";
 
     //CONTENT RELATED
-    public static final String APPROVALS = "approvals";
+    public static final String CONTENT_APPROVALS = "approvals";
+    public static final String CONTENT_DESCRIPTION = "description";
 
     //LOGCAT DEBUGGING
     public static final String DEBUG_GENERAL = "DEBUG_GEN";
+    public static final String DEBUG_FIREBASE = "DEBUG_FIREBASE";
 }

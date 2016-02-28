@@ -190,7 +190,7 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
         }
 
         points.setText("Points: " + u.getPoints());
-        level.setText("" + LevelPicker.levelPicker(u.getPoints()));
+        level.setText("" + LevelPicker.levelPicker((int) u.getPoints()));
         userName.setText(MainActivity.getMeRequest().getMe().getFirstName());
 
         byte[] profilePictureArray = u.getInAppProfilePicture();

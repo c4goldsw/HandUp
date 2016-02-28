@@ -92,9 +92,9 @@ public class CourseUsersQueryTask extends AsyncTask<Void, Void, Void> {
             }
 
         } catch (JsonSyntaxException e) {
-            Log.d("Async", "Error json: " + e);
+            Log.d("Async", "Error json (CourseUsersQueryTask): " + e);
         } catch (NullPointerException b){
-            Log.d("Async", "Error null: " + b);
+            Log.d("Async", "Error null (CourseUsersQueryTask): " + b);
         }
 
         return null;

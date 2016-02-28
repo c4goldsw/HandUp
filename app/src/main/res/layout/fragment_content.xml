@@ -20,7 +20,7 @@
             android:background="@color/colorAccent"/>
 
         <TextView
-            android:id="@+id/profile_card_name"
+            android:id="@+id/content_card_text"
             style="@style/ProfileCardText"/>
 
     </FrameLayout>
