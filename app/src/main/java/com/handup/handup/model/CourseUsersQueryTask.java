@@ -39,6 +39,7 @@ public class CourseUsersQueryTask extends AsyncTask<Void, Void, Void> {
 
     public CourseUsersQueryTask(int courseID, CourseUserQueryImplementer cu, String username,
                                 String userID){
+
         this.courseID = courseID;
         this.cu = cu;
         this.username = username;

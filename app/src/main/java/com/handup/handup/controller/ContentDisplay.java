@@ -1,23 +1,18 @@
 package com.handup.handup.controller;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
 
 import com.handup.handup.R;
-import com.handup.handup.controller.course.content.ContentFragment;
 import com.handup.handup.controller.course.content.MyContentRecyclerViewAdapter;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.Content;
-import com.handup.handup.model.ContentPullTask;
+import com.handup.handup.model.fbquery.ContentPullTask;
 import com.handup.handup.view.RecyclerItemSpacing;
 
 import java.util.ArrayList;

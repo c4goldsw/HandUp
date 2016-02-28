@@ -1,8 +1,6 @@
 package com.handup.handup.controller.course;
 
-import android.animation.Animator;
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -28,21 +25,20 @@ import android.view.animation.TranslateAnimation;
 import com.firebase.client.Firebase;
 import com.handup.handup.R;
 import com.handup.handup.controller.course.content.ContentFragment;
-import com.handup.handup.controller.course.user.SubscribeDialog;
 import com.handup.handup.controller.course.user.UserFragment;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
 import com.handup.handup.model.Content;
-import com.handup.handup.model.ContentPullTask;
+import com.handup.handup.model.fbquery.ContentPullTask;
 import com.handup.handup.model.CourseUsersQueryTask;
-import com.handup.handup.model.ContentPushTask;
-import com.handup.handup.model.GetLectureTimes;
+import com.handup.handup.model.fbquery.ContentPushTask;
+import com.handup.handup.model.fbquery.GetLectureTimes;
 import com.handup.handup.model.User;
 import com.handup.handup.model.fbquery.GetSubscriptionTask;
+import com.handup.handup.model.fbquery.SubscribedContentPullTask;
 import com.handup.handup.view.CourseSectionPagerAdapter;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -118,10 +114,10 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
             @Override
             public void onClick(View view) {
 
-                if(currentTab == 0) {
+                if (currentTab == 0) {
                     //TODO: Add user bluetooth connection functionality
 
-                }else if(currentTab == 1) {
+                } else if (currentTab == 1) {
                     submitContent(view);
                 }
             }
@@ -131,7 +127,6 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
 
         new GetLectureTimes(Integer.toString(courseID), this).execute();
         new CourseUsersQueryTask(courseID, this, username, uid).execute();
-        new ContentPullTask(Integer.toString(courseID), uid, this).execute();
         new GetSubscriptionTask(uid, Integer.toString(courseID), this).execute();
     }
 
@@ -364,6 +359,11 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         }
 
         this.subscriptionIDs = subIntIds;
+
+        /*Pull the subscribed content into the content feed.  Note, the user themselves is
+        "subscribed" to their own content for simplicity*/
+        this.subscriptionIDs.add(Integer.parseInt(uid));
+        new SubscribedContentPullTask(this.subscriptionIDs, Integer.toString(courseID), this).execute();
     }
 
 

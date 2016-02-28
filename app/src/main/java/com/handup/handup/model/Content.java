@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 
+import java.util.ArrayList;
+
 /**
  * Created by Christopher on 1/13/2016.
  */
@@ -13,7 +15,7 @@ public class Content {
 
     private String image;
 
-    private boolean approved;
+    private ArrayList<Integer> approvals;
 
     public Content(){
 
@@ -24,20 +26,12 @@ public class Content {
         setContentBitmap(b);
     }
 
-    public boolean isApproved() {
-        return approved;
+    public ArrayList<Integer> getApprovals(){
+        return approvals;
     }
 
-    public void setApproved(boolean approved) {
-        this.approved = approved;
-    }
-
-    public void setApproved(String approved)
-    {
-        if(approved.equals("true"))
-            setApproved(true);
-        else if(approved.equals("false"))
-            setApproved(false);
+    public void setApproved(ArrayList<Integer> approvals) {
+        this.approvals = approvals;
     }
 
     public Bitmap getContentBitmap() {

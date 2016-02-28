@@ -51,6 +51,9 @@ public class Constants {
     public static final String DIALOG_BUNDLE_UID = "uid";
     public static final String DIALOG_BUNDLE_SUBID = "subId";
 
+    //CONTENT RELATED
+    public static final String APPROVALS = "approvals";
+
     //LOGCAT DEBUGGING
     public static final String DEBUG_GENERAL = "DEBUG_GEN";
 }
