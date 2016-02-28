@@ -1,5 +1,6 @@
 package com.handup.handup.controller;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 
 import com.handup.handup.R;
+import com.handup.handup.controller.course.content.ContentFragment;
 import com.handup.handup.controller.course.content.MyContentRecyclerViewAdapter;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.Content;
@@ -17,7 +19,8 @@ import com.handup.handup.view.RecyclerItemSpacing;
 
 import java.util.ArrayList;
 
-public class ContentDisplay extends AppCompatActivity implements ContentPullTask.ContentQueryImplementer {
+public class ContentDisplay extends AppCompatActivity implements ContentPullTask.ContentQueryImplementer,
+        ContentFragment.OnContentInteractionListener {
 
     private RecyclerView mRecyclerView;
     private MyContentRecyclerViewAdapter mRecyclerViewAdapter;
@@ -50,7 +53,7 @@ public class ContentDisplay extends AppCompatActivity implements ContentPullTask
         }
 
         mRecyclerViewAdapter = new MyContentRecyclerViewAdapter(new ArrayList<Content>(),
-                dm.widthPixels, mColumnCount, false);
+                dm.widthPixels, mColumnCount, false, this);
 
         mRecyclerView.addItemDecoration(new RecyclerItemSpacing((int) (8 * dm.density), mColumnCount));
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
@@ -71,5 +74,15 @@ public class ContentDisplay extends AppCompatActivity implements ContentPullTask
     @Override
     public void onContentQueryFinish(Content c) {
         updateUI(c);
+    }
+
+    @Override
+    public void setContentFragment(ContentFragment contentFragment) {
+
+    }
+
+    @Override
+    public Activity getActivity() {
+        return null;
     }
 }

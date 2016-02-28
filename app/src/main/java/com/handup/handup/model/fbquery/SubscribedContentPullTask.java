@@ -63,7 +63,7 @@ public class SubscribedContentPullTask extends AsyncTask<Void, Void, Void> {
                     c.setOwner(uidRef);
                     c.setImage(imageString);
                     c.setContentDescription((String) dataSnapshot.child(Constants.CONTENT_DESCRIPTION).getValue()
-                    + ", " + c.getApprovalCount() + ((c.getApprovalCount() == 1) ? " approve":" approves"));
+                    , c.getApprovalCount() + ((c.getApprovalCount() == 1) ? " approve":" approves"));
 
                     usingClass.onContentQueryFinish(c);
 

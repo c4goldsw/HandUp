@@ -27,6 +27,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.handup.handup.R;
+import com.handup.handup.controller.course.content.ApproveDialog;
 import com.handup.handup.controller.course.content.ContentFragment;
 import com.handup.handup.controller.course.user.SubscribeDialog;
 import com.handup.handup.controller.course.user.UserFragment;
@@ -47,12 +48,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
 
 public class CourseActivity extends AppCompatActivity implements UserFragment.UserListFragmentInteractionListener,
-        ContentFragment.OnContentFragmentInteractionListener, CourseUsersQueryTask.CourseUserQueryImplementer,
+        ContentFragment.OnContentInteractionListener, CourseUsersQueryTask.CourseUserQueryImplementer,
         GetLectureTimes.OnLectureTimeGetFinish, ContentPullTask.ContentQueryImplementer,
-        GetSubscriptionTask.GetSubscriptionTaskUser, SubscribeDialog.SubscribeDialogListener {
+        GetSubscriptionTask.GetSubscriptionTaskUser, SubscribeDialog.SubscribeDialogListener,
+        ApproveDialog.ApproveDialogListener{
 
     /*===========================================================================================
     Variables
@@ -187,7 +188,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                 contentFragment.mRecyclerViewAdapter.removeItem(uid);
 
                 Content newContent = new Content(image);
-                newContent.setContentDescription(displayName);
+                newContent.setContentDescription(displayName, "1 Approve");
                 contentFragment.updateUI(newContent);
 
                 String imageString = ImageHandler.getImageString(image);
@@ -368,8 +369,8 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
 
                 //get each approval
                 ArrayList<Integer> approvals = new ArrayList<Integer>();
-                for(Iterator<DataSnapshot> approvalIt = dataSnapshot.child(Constants.CONTENT_APPROVALS).getChildren().iterator();
-                    approvalIt.hasNext();) {
+                for (Iterator<DataSnapshot> approvalIt = dataSnapshot.child(Constants.CONTENT_APPROVALS).getChildren().iterator();
+                     approvalIt.hasNext(); ) {
 
                     approvals.add(Integer.parseInt(approvalIt.next().getKey()));
                 }
@@ -379,7 +380,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                 c.setOwner(Integer.parseInt(uid));
                 c.setImage(imageString);
                 c.setContentDescription((String) dataSnapshot.child(Constants.CONTENT_DESCRIPTION).getValue()
-                        + ", " + c.getApprovalCount() + ((c.getApprovalCount() == 1) ? " approve" : " approves"));
+                        , c.getApprovalCount() + ((c.getApprovalCount() == 1) ? " approve" : " approves"));
 
                 contentFragment.mRecyclerViewAdapter.addItem(c);
                 contentFragment.mRecyclerViewAdapter.notifyDataSetChanged();
@@ -421,10 +422,6 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     public void onGetSubscriptionFinish(ArrayList<String> subscriptionIDs) {
 
         ArrayList<Integer> subIntIds = new ArrayList<>();
-        for(String s : subscriptionIDs){
-            subIntIds.add(Integer.parseInt(s));
-            Log.d(Constants.DEBUG_GENERAL, "Subscribed to " + subIntIds.get(subIntIds.size() - 1));
-        }
 
         this.subscriptionIDs = subIntIds;
 
@@ -443,11 +440,17 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         return courseID;
     }
 
-    public static String getUserName() {
-        return userName;
-    }
-
     public static String getUid() {
         return uid;
+    }
+
+    @Override
+    public void removeApproval(String oid) {
+        contentFragment.mRecyclerViewAdapter.removeApproval(Integer.parseInt(oid), Integer.parseInt(uid));
+    }
+
+    @Override
+    public void addApproval(String oid) {
+        contentFragment.mRecyclerViewAdapter.addApproval(Integer.parseInt(oid), Integer.parseInt(uid));
     }
 }

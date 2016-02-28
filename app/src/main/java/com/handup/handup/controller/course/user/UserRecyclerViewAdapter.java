@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +21,6 @@ import com.handup.handup.model.User;
 import java.util.ArrayList;
 
 import static com.handup.handup.helper.MiscFunctions.binarySearchArray;
-import static com.handup.handup.helper.MiscFunctions.linearSearchArray;
 
 public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder> {
 
@@ -132,7 +130,7 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
             }
 
             dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_UID, uid);
-            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_NAME, mNameView.getText().toString());
+            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_TITLE, mNameView.getText().toString());
 
             //Taken from http://tinyurl.com/3xatjj5
             DialogFragment newFragment = new SubscribeDialog();

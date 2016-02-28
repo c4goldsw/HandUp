@@ -1,18 +1,17 @@
 package com.handup.handup.controller.course.content;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.handup.handup.R;
-import com.handup.handup.helper.Constants;
 import com.handup.handup.model.Content;
 import com.handup.handup.view.RecyclerItemSpacing;
 
@@ -21,7 +20,7 @@ import java.util.ArrayList;
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnContentFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnContentInteractionListener}
  * interface.
  */
 public class ContentFragment extends Fragment {
@@ -34,7 +33,7 @@ public class ContentFragment extends Fragment {
     private float mDensity;
     private int mScreenWidth;
 
-    private OnContentFragmentInteractionListener mListener;
+    private OnContentInteractionListener mListener;
 
     private RecyclerView mRecyclerView;
     public MyContentRecyclerViewAdapter mRecyclerViewAdapter;
@@ -90,7 +89,7 @@ public class ContentFragment extends Fragment {
             }
 
             mRecyclerViewAdapter = new MyContentRecyclerViewAdapter
-                    (new ArrayList<Content>(), mScreenWidth, mColumnCount, true);
+                    (new ArrayList<Content>(), mScreenWidth, mColumnCount, true, mListener);
 
             mRecyclerView.addItemDecoration(new RecyclerItemSpacing( (int) (8*mDensity), mColumnCount));
             mRecyclerView.setAdapter(mRecyclerViewAdapter);
@@ -111,8 +110,8 @@ public class ContentFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnContentFragmentInteractionListener) {
-            mListener = (OnContentFragmentInteractionListener) context;
+        if (context instanceof OnContentInteractionListener) {
+            mListener = (OnContentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement UserListFragmentInteractionListener");
@@ -135,8 +134,9 @@ public class ContentFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnContentFragmentInteractionListener {
+    public interface OnContentInteractionListener {
 
         void setContentFragment(ContentFragment contentFragment);
+        Activity getActivity();
     }
 }

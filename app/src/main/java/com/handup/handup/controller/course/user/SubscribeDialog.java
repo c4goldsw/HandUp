@@ -6,7 +6,6 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
 import com.firebase.client.Firebase;
 import com.handup.handup.controller.course.CourseActivity;
@@ -39,7 +38,7 @@ public class SubscribeDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        name = getArguments().getString(Constants.DIALOG_BUNDLE_NAME);
+        name = getArguments().getString(Constants.DIALOG_BUNDLE_TITLE);
         subId = getArguments().getString(Constants.DIALOG_BUNDLE_UID);
         subscribed = getArguments().getBoolean(Constants.DIALOG_BUNDLE_BOOL_VAL);
 
@@ -70,7 +69,7 @@ public class SubscribeDialog extends DialogFragment {
                     }
                     //subscribe
                     else if(checkedItems[0] && !subscribed){
-                        
+
                         mListener.addUserToContentFeed(subId);
                         ref.setValue("0");
                     }

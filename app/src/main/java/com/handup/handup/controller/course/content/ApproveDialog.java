@@ -1,5 +1,6 @@
 package com.handup.handup.controller.course.content;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
@@ -12,7 +13,6 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.MutableData;
 import com.firebase.client.Transaction;
-import com.handup.handup.controller.course.CourseActivity;
 import com.handup.handup.helper.Constants;
 
 /**
@@ -26,10 +26,25 @@ public class ApproveDialog extends DialogFragment {
     private String courseId;
     private boolean approved;
 
+    ApproveDialogListener mListener;
+
+    @Override
+    public void onAttach(Activity activity){
+
+        super.onAttach(activity);
+        try{
+            mListener = (ApproveDialogListener) activity;
+        }
+        catch (ClassCastException e){
+            throw new ClassCastException(activity.toString() + " doesn't implement "+
+                    "ApproveDialogListener");
+        }
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        name = getArguments().getString(Constants.DIALOG_BUNDLE_NAME);
+        name = getArguments().getString(Constants.DIALOG_BUNDLE_TITLE);
         uid = getArguments().getString(Constants.DIALOG_BUNDLE_UID);
         oid = getArguments().getString(Constants.DIALOG_BUNDLE_OID);
         courseId = getArguments().getString(Constants.DIALOG_BUNDLE_COURSE_ID);
@@ -61,7 +76,7 @@ public class ApproveDialog extends DialogFragment {
                         //disapprove
                         if(!checkedItems[0] && approved){
 
-                            //TODO: Update local values
+                            mListener.removeApproval(oid);
 
                             ref.removeValue();
                             changePoints.runTransaction(new Transaction.Handler() {
@@ -87,9 +102,9 @@ public class ApproveDialog extends DialogFragment {
                         //approve
                         else if(checkedItems[0] && !approved){
 
-                            //TODO: Update local values
+                            mListener.addApproval(oid);
 
-                            ref.setValue("0");
+                            ref.setValue(0);
                             changePoints.runTransaction(new Transaction.Handler() {
                                 @Override
                                 public Transaction.Result doTransaction(MutableData mutableData) {
@@ -124,5 +139,10 @@ public class ApproveDialog extends DialogFragment {
 
         // Create the AlertDialog object and return it
         return builder.create();
+    }
+
+    public interface ApproveDialogListener{
+        void removeApproval(String oid);
+        void addApproval(String oid);
     }
 }

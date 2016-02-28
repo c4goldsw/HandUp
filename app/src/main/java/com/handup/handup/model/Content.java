@@ -18,6 +18,9 @@ public class Content {
     private int approvalCount;
     private int owner;
 
+    private String description;
+    private String additionalText;
+
     /* ======================================================================
         Methods
        ======================================================================*/
@@ -37,6 +40,18 @@ public class Content {
 
     public void setOwner(int uid){
         owner = uid;
+    }
+
+    public void removeApproval(int uid){
+        approvals.remove(new Integer(uid));
+        contentDescription = description + ", " +
+                getApprovalCount() + ((getApprovalCount() == 1) ? " approve":" approves");
+    }
+
+    public void addApproval(int uid){
+        approvals.add(new Integer(uid));
+        contentDescription = description + ", " +
+                getApprovalCount() + ((getApprovalCount() == 1) ? " approve":" approves");
     }
 
     public int getApprovalCount(){
@@ -74,8 +89,11 @@ public class Content {
                 imageArray.length);
     }
 
-    public void setContentDescription(String description){
-        contentDescription = description;
+    public void setContentDescription(String description, String additionalText){
+
+        this.description = description;
+        this.additionalText = additionalText;
+        contentDescription = description + ", " + additionalText;
     }
 
     public String getContentDescription(){

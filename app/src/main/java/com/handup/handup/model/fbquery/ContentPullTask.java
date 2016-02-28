@@ -54,8 +54,12 @@ public class ContentPullTask extends AsyncTask<Void, Void, Void> {
 
                     Content c = new Content();
                     c.setImage(imageString);
-                    if(description != null) {c.setContentDescription(description);}
-                    else{c.setContentDescription("");}
+                    if(description != null) {
+                        c.setContentDescription(description, "");
+                    }
+                    else{
+                        c.setContentDescription("", "");
+                    }
 
                     cu.onContentQueryFinish(c);
                 }

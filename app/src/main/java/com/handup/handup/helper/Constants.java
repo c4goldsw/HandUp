@@ -47,15 +47,16 @@ public class Constants {
     public static final boolean ADDING_NEW_CONTENT = true;
     public static final boolean NOT_ADDING_NEW_CONTENT = false;
 
-    public static final String DIALOG_BUNDLE_NAME = "name";
+    public static final String DIALOG_BUNDLE_TITLE = "title";
     public static final String DIALOG_BUNDLE_BOOL_VAL = "BOOL_VAL";
     public static final String DIALOG_BUNDLE_UID = "uid";
     public static final String DIALOG_BUNDLE_OID = "oid";
     public static final String DIALOG_BUNDLE_COURSE_ID = "courseId";
 
-    //CONTENT RELATED
+    //CONTENT RELATED FIREBASE PATHS
     public static final String CONTENT_APPROVALS = "approvals";
     public static final String CONTENT_DESCRIPTION = "description";
+    public static final String CONTENT_DAY = "dayOfYear";
 
     //LOGCAT DEBUGGING
     public static final String DEBUG_GENERAL = "DEBUG_GEN";
