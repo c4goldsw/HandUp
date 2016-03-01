@@ -363,6 +363,9 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+                if(dataSnapshot.getValue() == null)
+                    return;
+
                 Log.d(Constants.DEBUG_GENERAL, "Query returned: " + dataSnapshot.toString());
 
                 String imageString = (String) dataSnapshot.child("image").getValue();
