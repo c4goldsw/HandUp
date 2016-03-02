@@ -1,15 +1,31 @@
 # HandUp
-Education app for the 2015/16 Perason Coding Contest
+Education app for the 2015/16 Perason Coding Contest.  [See the most recent update here.](https://www.youtube.com/watch?v=ThRieahvHM4)
 
-Many university students - whether they’re freshmen or have some kind of disability which impacts their learning - may struggle to cope academically with the environment they face.  Even if they had fared well in secondary school, they may not be able to adapt their previous studying methods to learning in a university.  Poor note taking habits, infrequent lecture attendance, or the inability to form and work in study groups are examples of issues which can lead to increasing chances of students failing in a course.
-Hand Up (a pun on raising one's hand and receiving a "hand up") aims to encourage students with poor studying skills to form a well-rounded repertoire of good studying habits that will allow them to succeed academically.  Hand Up is social-network based learning application.  If a student is registered for a given course in their university, they can sign up for an equivalent for that course on Hand Up.  Each student in a Hand Up course can earn points by doing any of the following activities below that relate to the course they’re in, all of which aim to promote good study habits:
-- By forming study groups with other students in the course and meeting together in order to study. Meetings must be scheduled in advance and can be verified by using short range wireless technologies like Bluetooth.
- - By taking notes (either typed or handwritten) and submitting them to the app, either electronically or by taking a picture of them, within one day of a lecture happening.  These notes can then be analyzed using sentiment analysis and can then be compared to the notes of their peers in that course.  If the notes match in content, it implies that they’ve both been to the same lecture.
-- By either creating or using peer-made quizzes for the reviewing the content that a course has covered within a two week period.  The quizzes can be peer-reviewed and “approved” (“liked”) to ensure they are legitimate and of a decent quality.
- - By creating other kinds of study aids that receives a significant amount of “approval” (or “likes”) (e.g. diagrams of course concepts)
-Hand Up assumes that the course instructor will not be involved in maintaining a Hand Up course.  In the event that an instructor does become involved in maintaining and Hand Up course, they can create their own quizzes that don’t have to be peer-reviewed.  They can also submit their own lecture notes so that the verification of notes that students submit is not dependent on other student’s lecture notes.
-Students on Hand Up will have their own simple, customizable profiles and ranks based off the number of points they have.  The aim of awarding points and encouraging social interaction through the application is to make its use more enjoyable.  I'm taking inspiration from Memrise, a memorization application that awards points for taking memory tests.  What I find so appealing about Memrise is that it awards points to users for simply engaging in one of their tests.  Users earn ranks based off the number of points they have, and have customizable profiles which may be followed by other users.  I’m confident that, given there is enough initial interest in the application, a sustainable user base can be made by basing Hand Up off this model.
-It should finally be recognized that – because of the decentralized nature of Hand Up - the app’s point system is vulnerable to manipulation by students.  I’m attempting to minimize this manipulation using the verification methods mentioned above.  Also, given the nature of the app as an educational aid, I doubt many users would have the motivation to carry out any manipulation.
+## Inspiration
+I'm a huge fan of Memrise, a vocabulary memorization app that awards user's points for doing memorization exercises.  It's a hugely successful model and based off of that,  I thought that a points-based model could have other applications.  Therefore, for the Pearson Student Coding Contest, I decided that I would use such a system to make a study motivation app.
+
+## What it does:
+The idea is that it motivates students to take notes and go the class - in other words, it's targeted towards students with poor study habits.  HandUp will award points to users for doing one of the following two tasks:
+
+ - Taking pictures of lecture notes or content for a particular course and submitting it to the app - other users in that course can then "approve" it, giving the user points.
+ - Going to class.  During the lecture period, students can connect on the app via BlueTooth, in turn verifying that the students are in their lecture.  By requiring the users to connect during lecture time, the odds of them both going to lecture are increased (**not implemented yet**).
+
+This app is integrated with Pearson Learning Studio, allowing me to find out what courses users are enrolled in, as well as who their class mates are (given their campus uses learning studio).  Using a FireBase database, I can then keep track individual use information, such as the profile picture of a user or the number of points they have.
+
+## How I built it
+Memrise is an Android application built with Android studio.  The backend of the app consists of a test instance of Pearson Learning Studio (accessed through a REST API), a learning management system and FireBase, a NoSQL database.
+
+## Challenges I ran into
+This is the first Android app I've made outside of school and the first time I'm using a RESTful API, so I spent a great deal of time making sense of the Android environment as well as using and parsing queries to Pearson.  Making user data accessible via an online database also presented issues, such as downloading latency issues.
+
+## Accomplishments that I'm proud of
+This is the first Android app I've made outside of school - I'm trying to make it reach the most professional standards I can reasonably achieve and I feel that I'm headed in a good direction with the app.  Also, one major feature has finally been implemented.
+
+## What I learned
+A ton!
+
+## What's next for HandUp
+The only outstanding feature that needs to be implemented is meeting verification.  For meeting verification, a Bluetooth connection system for the app has to be put in place.  This  will allow users to get points by connecting via BlueTooth on the app during lecture times, as described above.  Aside from that, I also have to manage memory better (i.e. downloading smaller images for thumbnails, ensuring I don't have to many continuous connections to my FireBase DB, etc).
 
 ## Attribution:
 

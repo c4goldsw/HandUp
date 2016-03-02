@@ -166,14 +166,16 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
         void onProfileSelect(ProfileFragment f);
     }
 
-    //taken from http://bit.ly/1UmSnOi , on SO
+    //TODO: This is broken, I think it has to do with MainActivity handling onActivityResult
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        //taken from http://bit.ly/1UmSnOi , on SO
         if (requestCode == Constants.SELECT_IMAGE)
             if (resultCode == AppCompatActivity.RESULT_OK) {
                 selectProfilePicture(data);
-            }
+        }
     }
 
      /*===========================================================================================
