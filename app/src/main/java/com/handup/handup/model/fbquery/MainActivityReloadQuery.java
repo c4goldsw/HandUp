@@ -63,6 +63,8 @@ public class MainActivityReloadQuery extends AsyncTask<Void, Void, Void>{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+                Log.d(Constants.DEBUG_FIREBASE, "Got points back!");
+
                 MainActivity.getUser().setPoints((long) dataSnapshot.getValue());
                 usingClass.updateFragmentUIs();
             }

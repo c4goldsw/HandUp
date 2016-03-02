@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -22,6 +23,7 @@ import com.handup.handup.R;
 import com.handup.handup.controller.login.LoginActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.Course;
+import com.handup.handup.model.fbquery.MainActivityReloadQuery;
 import com.handup.handup.model.lsquery.LsQueryObject;
 import com.handup.handup.model.InitialQueryTask;
 import com.handup.handup.model.StateManager;
@@ -161,6 +163,16 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         startActivity(new Intent(this, LoginActivity.class));
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+
+        Log.d(Constants.DEBUG_GENERAL, "MainActivity: OnActivityCalled: Request:" + requestCode + ", Result: " + resultCode);
+
+        if(requestCode == Constants.COURSE_ACT_FOR_RESULT){
+            new MainActivityReloadQuery(MainActivity.getmActivity()).execute();
+        }
+    }
+
     /*===========================================================================================
     View (UI) methods
     ===========================================================================================*/
@@ -250,8 +262,6 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
         return super.onOptionsItemSelected(item);
     }
-
-
 
     /*===========================================================================================
     Fragment listener methods

@@ -12,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.handup.handup.R;
 import com.handup.handup.controller.course.CourseActivity;
 import com.handup.handup.controller.course.user.SubscribeDialog;
@@ -64,7 +68,6 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
             if(c.getOwner() == owner){
 
                 c.removeApproval(uid);
-                //TODO: Update the UI
             }
         }
     }
@@ -82,7 +85,6 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
                 for(Integer i : c.getApprovals()){
                     Log.d(Constants.DEBUG_GENERAL, "Approver: " + i);
                 }
-                //TODO: Update the UI
             }
         }
     }
@@ -99,7 +101,27 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
         Bitmap content = mValues.get(position).getContentBitmap();
         holder.mImageView.setImageBitmap(content);
-        holder.mTextView.setText(mValues.get(position).getContentDescription());
+        holder.contentDescription1 = mValues.get(position).getDescription();
+        holder.contentDescription2 = Integer.toString(mValues.get(position).getApprovalCount());
+        holder.mTextView.setText(holder.contentDescription1 + ", " + holder.contentDescription2);
+
+        Firebase approveChangeRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" +
+        mValues.get(position).getOwner() + "/" + CourseActivity.getCourseID() + "/lastContent/approvals");
+
+        approveChangeRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() == null)
+                    return;
+
+                holder.mTextView.setText(holder.contentDescription1 + ", " + dataSnapshot.getChildrenCount());
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
         //set the height of each item to be equal to it's width
         holder.mImageView.getLayoutParams().height = (mScreenWidth - (4 + 4*mColumnCount)) /mColumnCount;
@@ -119,14 +141,14 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
         return mValues.size();
     }
 
-
-
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public final View mView;
         public CardView mCardView;
         public ImageView mImageView;
         public TextView mTextView;
-        public int contentPosition;
+
+        public String contentDescription1;
+        public String contentDescription2;
 
         public ViewHolder(View view) {
             super(view);
@@ -140,8 +162,6 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
         @Override
         public void onClick(View v) {
-
-            Log.d(Constants.DEBUG_GENERAL, "Clicking on content!");
 
             if(!enableVoting){
                 return;

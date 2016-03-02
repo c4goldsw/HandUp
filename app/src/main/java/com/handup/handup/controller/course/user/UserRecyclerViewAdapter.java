@@ -13,6 +13,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.handup.handup.R;
 import com.handup.handup.controller.course.CourseActivity;
 import com.handup.handup.helper.Constants;
@@ -48,6 +52,23 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         holder.mNameView.setText(mValues.get(position).getDisplayName());
         holder.mPointsView.setText("Points: " + mValues.get(position).getPoints());
         holder.uid = mValues.get(position).getUid();
+
+        Firebase pointListener = new Firebase(Constants.FIRE_BASE_URL + "/users/" + holder.uid + "/points");
+        pointListener.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.getValue() == null)
+                    return;
+
+                holder.mPointsView.setText("Points: " + dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
         byte[] profilePictureArray = mValues.get(position).getInAppProfilePicture();
 

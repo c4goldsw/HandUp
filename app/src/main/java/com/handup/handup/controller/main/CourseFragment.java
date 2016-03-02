@@ -83,7 +83,8 @@ public class CourseFragment extends Fragment {
         + MainActivity.getMeRequest().getMe().getLastName());
         i.putExtra(Constants.PUT_EXTRA_UID, MainActivity.getUser().getUid());
 
-        startActivityForResult(i, Constants.COURSE_ACT_FOR_RESULT);
+        //NOTE: the response is handled in MainActivity's onActivityResult
+        getActivity().startActivityForResult(i, Constants.COURSE_ACT_FOR_RESULT);
     }
 
     /**
@@ -99,14 +100,6 @@ public class CourseFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void onCourseSelect(Uri uri);
         void setCourseFragment(CourseFragment f);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-
-        if(requestCode == Constants.COURSE_ACT_FOR_RESULT && resultCode == Constants.COURSE_ACT_CONTENT_ADDED){
-            new MainActivityReloadQuery(MainActivity.getmActivity()).execute();
-        }
     }
 
     /*===========================================================================================

@@ -100,4 +100,20 @@ public class Content {
 
         return  contentDescription;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getAdditionalText() {
+        return additionalText;
+    }
+
+    public void setAdditionalText(String additionalText) {
+        this.additionalText = additionalText;
+    }
 }
