@@ -38,6 +38,9 @@ public class SubscribedContentPullTask extends AsyncTask<Void, Void, Void> {
             Firebase ref = new Firebase(Constants.FIRE_BASE_URL + "/content/" + uid +
                     "/" + courseID + "/lastContent");
 
+            Log.d(Constants.DEBUG_FIREBASE,Constants.FIRE_BASE_URL + "/content/" + uid +
+                    "/" + courseID + "/lastContent" );
+
             final int uidRef = uid;
 
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -45,8 +48,12 @@ public class SubscribedContentPullTask extends AsyncTask<Void, Void, Void> {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
+                    Log.d(Constants.DEBUG_FIREBASE, "Entered the content revtrieval task: ");
+
                     if(dataSnapshot.getValue() == null)
                         return;
+
+                    Log.d(Constants.DEBUG_FIREBASE, "SubscribedContentPullTask: retrived image: " + dataSnapshot.getValue());
 
                     String imageString = (String) dataSnapshot.child("image").getValue();
 

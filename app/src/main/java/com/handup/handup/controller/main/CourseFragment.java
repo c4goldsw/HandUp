@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,8 +84,16 @@ public class CourseFragment extends Fragment {
         + MainActivity.getMeRequest().getMe().getLastName());
         i.putExtra(Constants.PUT_EXTRA_UID, MainActivity.getUser().getUid());
 
-        //NOTE: the response is handled in MainActivity's onActivityResult
-        getActivity().startActivityForResult(i, Constants.COURSE_ACT_FOR_RESULT);
+        startActivityForResult(i, Constants.COURSE_ACT_FOR_RESULT);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        Log.d(Constants.DEBUG_GENERAL, "MainActivity: OnActivityCalled: Request:" + requestCode + ", Result: " + resultCode);
+
+        if(requestCode == Constants.COURSE_ACT_FOR_RESULT){
+            new MainActivityReloadQuery(MainActivity.getmActivity()).execute();
+        }
     }
 
     /**

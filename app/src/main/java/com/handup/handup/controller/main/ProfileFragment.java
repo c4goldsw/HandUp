@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -166,10 +167,10 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
         void onProfileSelect(ProfileFragment f);
     }
 
-    //TODO: This is broken, I think it has to do with MainActivity handling onActivityResult
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d(Constants.DEBUG_GENERAL, "ProfileFragment: OnActivityResult: Request:" + requestCode + ", Result: " + resultCode);
 
         //taken from http://bit.ly/1UmSnOi , on SO
         if (requestCode == Constants.SELECT_IMAGE)

@@ -363,7 +363,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.getValue() == null)
+                if (dataSnapshot.getValue() == null)
                     return;
 
                 Log.d(Constants.DEBUG_GENERAL, "Query returned: " + dataSnapshot.toString());
@@ -424,9 +424,9 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     @Override
     public void onGetSubscriptionFinish(ArrayList<String> subscriptionIDs) {
 
-        ArrayList<Integer> subIntIds = new ArrayList<>();
-
-        this.subscriptionIDs = subIntIds;
+        this.subscriptionIDs = new ArrayList<>();
+        for(String s : subscriptionIDs)
+            this.subscriptionIDs.add(Integer.parseInt(s));
 
         /*Pull the subscribed content into the content feed.  Note, the user themselves is
         "subscribed" to their own content for simplicity*/

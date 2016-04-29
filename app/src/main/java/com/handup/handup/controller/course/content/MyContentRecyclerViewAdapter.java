@@ -143,7 +143,6 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public final View mView;
-        public CardView mCardView;
         public ImageView mImageView;
         public TextView mTextView;
 

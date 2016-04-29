@@ -165,12 +165,12 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
-
-        Log.d(Constants.DEBUG_GENERAL, "MainActivity: OnActivityCalled: Request:" + requestCode + ", Result: " + resultCode);
+        super.onActivityResult(requestCode, resultCode, data);
+        /*Log.d(Constants.DEBUG_GENERAL, "MainActivity: OnActivityCalled: Request:" + requestCode + ", Result: " + resultCode);
 
         if(requestCode == Constants.COURSE_ACT_FOR_RESULT){
             new MainActivityReloadQuery(MainActivity.getmActivity()).execute();
-        }
+        }*/
     }
 
     /*===========================================================================================

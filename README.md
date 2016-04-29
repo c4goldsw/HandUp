@@ -31,4 +31,4 @@ The only outstanding feature that needs to be implemented is meeting verificatio
 
 Title Image
 
-By Xbxg32000 (Own work by uploader; the watermark is my own.) [CC BY-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0) or GFDL (http://www.gnu.org/copyleft/fdl.html)], via Wikimedia Commons
+Taken from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:5th_Floor_Lecture_Hall.jpg), By Xbxg32000 [CC BY-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0) or GFDL (http://www.gnu.org/copyleft/fdl.html)], via Wikimedia Commons
