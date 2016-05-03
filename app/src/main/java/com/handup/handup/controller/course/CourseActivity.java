@@ -31,6 +31,7 @@ import com.handup.handup.controller.course.content.ApproveDialog;
 import com.handup.handup.controller.course.content.ContentFragment;
 import com.handup.handup.controller.course.user.SubscribeDialog;
 import com.handup.handup.controller.course.user.UserFragment;
+import com.handup.handup.controller.main.MainActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
 import com.handup.handup.model.Content;
@@ -140,7 +141,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     }
 
     //TODO: change currentTimeMillis to something system-time independent
-    private void submitContent(View view){
+    private void submitContent(final View view){
 
         if(lectureTimes == null) {
             Snackbar.make(view, "Still loading", Snackbar.LENGTH_LONG)
@@ -159,15 +160,52 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                 startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                         , Constants.TAKE_PHOTO);
             }
-        }*/
-
-        //TODO: remove after finished testing
-        selectedLecture = lectureTimes.get(0);
-        startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                , Constants.TAKE_PHOTO);
+        }
 
         Snackbar.make(view, "Content submission closed, try again on ...", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
+
+        */
+
+        //check to see if we haven't submitted anything for the day
+        Firebase checkSubmission = new Firebase(Constants.FIRE_BASE_URL + "/content/" + uid +
+                "/" + courseID + "/lastContent/" + Constants.CONTENT_DAY);
+        checkSubmission.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                //Empty entry ==> it's the first time this is happening
+                if (dataSnapshot.getValue() == null) {
+                    //TODO: remove after finished testing
+                    selectedLecture = lectureTimes.get(0);
+                    startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            , Constants.TAKE_PHOTO);
+                } else {
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(new Date(System.currentTimeMillis()));
+
+                    //If the user is attemping to submit content on a new day
+                    if (!Integer.toString(c.get(Calendar.DAY_OF_YEAR)).equals(dataSnapshot.getValue()
+                            .toString())) {
+
+                        //TODO: remove after finished testing
+                        selectedLecture = lectureTimes.get(0);
+                        startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                , Constants.TAKE_PHOTO);
+                    }
+                    else{
+                        Snackbar.make(view, "You've already submitted content for today! You can" +
+                                " submit content during your next lecture ", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
     }
 
     //taken from http://bit.ly/1UmSnOi , on SO
@@ -185,11 +223,17 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                 Bitmap image = ImageHandler.getPortraitImage(
                         data.getData(), this, 250, 259);
 
+                //users can only submit one piece of content per day - the previous content
+                //will be overwritten and removed from the news feed
                 contentFragment.mRecyclerViewAdapter.removeItem(uid);
 
-                Content newContent = new Content(image);
-                newContent.setContentDescription(displayName, "1 Approve");
-                contentFragment.updateUI(newContent);
+                /*Content newContent = new Content(image);
+                newContent.setApproved(new ArrayList<Integer>());
+                newContent.addApproval(Integer.parseInt(uid));
+                newContent.setDescription(MainActivity.getMeRequest().getMe().getFirstName() + " "
+                        + MainActivity.getMeRequest().getMe().getLastName() + ", 1 Approve");*/
+
+                //contentFragment.updateUI(newContent);
 
                 String imageString = ImageHandler.getImageString(image);
 

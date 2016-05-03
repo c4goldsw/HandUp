@@ -25,6 +25,7 @@ import com.handup.handup.model.User;
 import java.util.ArrayList;
 
 import static com.handup.handup.helper.MiscFunctions.binarySearchArray;
+import static com.handup.handup.helper.MiscFunctions.linearSearchArray;
 
 public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder> {
 
@@ -142,7 +143,7 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
                 return; //Subscription info hasn't been loaded yet
             }
-            else if(binarySearchArray(CourseActivity.subscriptionIDs, Integer.parseInt(uid))){
+            else if(linearSearchArray(CourseActivity.subscriptionIDs, Integer.parseInt(uid))){
 
                 dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_BOOL_VAL, true);
             }else{

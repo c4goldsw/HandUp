@@ -76,7 +76,7 @@ public class ContentPushTask extends AsyncTask<Void, Void, Void>{
                 //The user is adding content for this course for the very first time
                 if(dataSnapshot.getValue() == null){
 
-                    contentFeedRef.child(Constants.CONTENT_APPROVALS + "/" + uid).setValue(0);
+                    contentFeedRef.child(Constants.CONTENT_APPROVALS + "/" + uid).setValue(1);
                     contentFeedRef.child(Constants.CONTENT_DAY).setValue(lectureDay);
 
                     Firebase incrementPoints  = new Firebase(Constants.FIRE_BASE_URL + "/users/"
@@ -101,43 +101,31 @@ public class ContentPushTask extends AsyncTask<Void, Void, Void>{
                         }
                     });
 
-                }else{// two possibilities: (1) adding content on same day (no points); (2) adding content on new day (give points)
+                }else{ //adding content on new day (give points)
 
-                    contentFeedRef.child(Constants.CONTENT_DAY).addValueEventListener(new ValueEventListener() {
+                    Firebase incrementPoints  = new Firebase(Constants.FIRE_BASE_URL + "/users/"
+                        + uid + "/points");
+                    incrementPoints.runTransaction(new Transaction.Handler() {
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(!dataSnapshot.getValue().equals(lectureDay)){//new day, give points
-                                Firebase incrementPoints  = new Firebase(Constants.FIRE_BASE_URL + "/users/"
-                                        + uid + "/points");
-                                incrementPoints.runTransaction(new Transaction.Handler() {
-                                    @Override
-                                    public Transaction.Result doTransaction(MutableData mutableData) {
+                        public Transaction.Result doTransaction(MutableData mutableData) {
 
-                                        if(mutableData.getValue() == null){
-                                            mutableData.setValue(1);
-                                        }else{
-                                            mutableData.setValue((long) mutableData.getValue() + 1);
-                                        }
-
-                                        return Transaction.success(mutableData);
-                                    }
-
-                                    @Override
-                                    public void onComplete(FirebaseError firebaseError, boolean b, DataSnapshot dataSnapshot) {
-                                        if(firebaseError != null)
-                                            Log.d(Constants.DEBUG_FIREBASE, firebaseError.toString());
-                                    }
-                                });
-
-                                contentFeedRef.child(Constants.CONTENT_DAY).setValue(lectureDay);
+                            if(mutableData.getValue() == null){
+                                mutableData.setValue(1);
+                            }else{
+                                mutableData.setValue((long) mutableData.getValue() + 1);
                             }
+
+                            return Transaction.success(mutableData);
                         }
 
                         @Override
-                        public void onCancelled(FirebaseError firebaseError) {
-
+                        public void onComplete(FirebaseError firebaseError, boolean b, DataSnapshot dataSnapshot) {
+                            if(firebaseError != null)
+                                Log.d(Constants.DEBUG_FIREBASE, firebaseError.toString());
                         }
                     });
+
+                    contentFeedRef.child(Constants.CONTENT_DAY).setValue(lectureDay);
                 }
             }
 

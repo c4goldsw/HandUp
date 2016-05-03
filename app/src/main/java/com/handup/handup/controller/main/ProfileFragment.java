@@ -27,8 +27,12 @@ import com.handup.handup.model.fbquery.ContentPullTask;
 import com.handup.handup.model.Course;
 import com.handup.handup.model.fbquery.FbDataChange;
 import com.handup.handup.model.User;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -170,8 +174,6 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.d(Constants.DEBUG_GENERAL, "ProfileFragment: OnActivityResult: Request:" + requestCode + ", Result: " + resultCode);
-
         //taken from http://bit.ly/1UmSnOi , on SO
         if (requestCode == Constants.SELECT_IMAGE)
             if (resultCode == AppCompatActivity.RESULT_OK) {
@@ -179,7 +181,7 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
         }
     }
 
-     /*===========================================================================================
+    /*===========================================================================================
     UI Methods
     ===========================================================================================*/
 
@@ -200,9 +202,9 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
 
         if (profilePictureArray != null) {
 
-            Bitmap picture = BitmapFactory.decodeByteArray(profilePictureArray, 0,
-                    profilePictureArray.length);
-            profilePicture.setImageBitmap(picture);
+            profilePicture.setImageBitmap(BitmapFactory.decodeByteArray(profilePictureArray, 0,
+                profilePictureArray.length));
+
         }else{
             profilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_mood_24dp));
         }
@@ -210,6 +212,7 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
         if(MainActivity.getUserContentPreview() != null){
 
             contentPicture.setImageBitmap(MainActivity.getUserContentPreview());
+
         }else{
 
             contentPicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_assignment_24dp));
@@ -225,15 +228,25 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
             Bitmap finalImage = ImageHandler.getPortraitImage(selectedImage, getActivity(), 300, 200);
             profilePicture.setImageBitmap(finalImage);
 
+            Bitmap thumbNail = ImageHandler.getPortraitImage(selectedImage, getActivity(), 35, 23);
+
             //http://stackoverflow.com/questions/26292969/can-i-store-image-files-in-firebase-using-java-api
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             finalImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
             String imageString = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
 
+            stream.reset();
+            thumbNail.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            String thumbNString = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT);
+
             MainActivity.getUser().setProfilePicture(imageString, stream.toByteArray());
+            stream.close();
 
             new FbDataChange("/users/" + MainActivity.getUser().getUid() +
                     "/profilePicture", imageString).execute();
+
+            new FbDataChange("/users/" + MainActivity.getUser().getUid() +
+                    "/profileThumb", thumbNString).execute();
         } catch (IOException e) {}
     }
 }

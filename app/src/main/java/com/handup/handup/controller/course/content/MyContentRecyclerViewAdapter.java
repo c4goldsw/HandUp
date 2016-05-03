@@ -102,8 +102,8 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
         Bitmap content = mValues.get(position).getContentBitmap();
         holder.mImageView.setImageBitmap(content);
         holder.contentDescription1 = mValues.get(position).getDescription();
-        holder.contentDescription2 = Integer.toString(mValues.get(position).getApprovalCount());
-        holder.mTextView.setText(holder.contentDescription1 + ", " + holder.contentDescription2);
+        holder.contentDescription2 = mValues.get(position).getApprovalCount() + ((mValues.get(position).getApprovalCount() == 1) ? " Approve":" Approves");
+        holder.mTextView.setText(holder.contentDescription1);
 
         Firebase approveChangeRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" +
         mValues.get(position).getOwner() + "/" + CourseActivity.getCourseID() + "/lastContent/approvals");
@@ -114,7 +114,8 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
                 if(dataSnapshot.getValue() == null)
                     return;
 
-                holder.mTextView.setText(holder.contentDescription1 + ", " + dataSnapshot.getChildrenCount());
+                holder.mTextView.setText(holder.contentDescription1 + ", " + dataSnapshot.getChildrenCount()
+                        + ((dataSnapshot.getChildrenCount() == 1) ? " Approve":" Approves"));
             }
 
             @Override
@@ -168,7 +169,6 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
             Bundle dialogInfo = new Bundle();
 
-            //TODO: check to see if b-Search is safe is safe (i.e. list is sorted)
             if(linearSearchArray(mValues.get(getAdapterPosition()).getApprovals(),
                     Integer.parseInt(CourseActivity.getUid()))){
 

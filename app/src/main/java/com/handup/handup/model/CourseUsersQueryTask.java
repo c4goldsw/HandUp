@@ -76,10 +76,17 @@ public class CourseUsersQueryTask extends AsyncTask<Void, Void, Void> {
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         //============ Get send data to main activity, start updating UIs ============
-                        User user = dataSnapshot.getValue(User.class);
 
-                        if(user != null){
+                        if(dataSnapshot.getValue() != null){
+                            User user = new User();
+                            user.setUid(dataSnapshot.child("uid").getValue().toString());
+                            user.setPoints(Integer.parseInt(dataSnapshot.child("points").getValue().toString()));
                             user.setDisplayName(userTemp.get(user.getUid()).getDisplayName());
+
+                            if(dataSnapshot.child("profileThumb").getValue() != null) {
+                                user.setProfilePicture((String) dataSnapshot.child("profileThumb").getValue());
+                            }
+
                             cu.onCourseUserQueryFinish(user);
                         }
                     }

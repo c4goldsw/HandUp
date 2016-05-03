@@ -14,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.handup.handup.controller.main.MainActivity;
+import com.handup.handup.helper.Constants;
 import com.handup.handup.model.fbquery.MainActivityReloadQuery;
 import com.handup.handup.model.lsquery.LsQueryObject;
 import com.handup.handup.model.lsquery.MeRequest;
@@ -66,7 +67,7 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
             //====================== Get data from learning studio responses ======================
             Gson g  = new Gson();
 
-            MeRequest meRequest = g.fromJson(jsonResponses.get(lsQueryURIS[ME]),
+            final MeRequest meRequest = g.fromJson(jsonResponses.get(lsQueryURIS[ME]),
                     MeRequest.class);
             MainActivity.setMeRequest(meRequest);
 
@@ -82,12 +83,19 @@ public class InitialQueryTask extends AsyncTask<Void, Void, Void> {
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     //============ Get send data to main activity, start updating UIs ============
-                    User user = dataSnapshot.getValue(User.class);
+                    User user = new User();
 
-                    if(user == null) {//we must check to see if the user exists in FB. else, make.
-                        user = new User();
+                    if(dataSnapshot.getValue() == null) {//we must check to see if the user exists in FB. else, make.
                         user.setUid(MainActivity.getMeRequest().getMe().getId());
                         ref.setValue(user);
+                    }else{
+                        user.setUid(dataSnapshot.child("uid").getValue().toString());
+                        user.setPoints(Integer.parseInt(dataSnapshot.child("points").getValue().toString()));
+                        user.setDisplayName(meRequest.getMe().getFirstName());
+
+                        if(dataSnapshot.child("profilePicture").getValue() != null) {
+                            user.setProfilePicture((String) dataSnapshot.child("profilePicture").getValue());
+                        }
                     }
 
                     MainActivity.setUser(user);

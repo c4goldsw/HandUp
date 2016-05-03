@@ -13,6 +13,8 @@ import com.handup.handup.controller.main.MainActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.InitialQueryTask;
 
+import org.apache.log4j.chainsaw.Main;
+
 /**
  * Created by Christopher on 2/27/2016.
  */
@@ -63,7 +65,8 @@ public class MainActivityReloadQuery extends AsyncTask<Void, Void, Void>{
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                Log.d(Constants.DEBUG_FIREBASE, "Got points back!");
+                if(dataSnapshot.getValue() == null)
+                    return;
 
                 MainActivity.getUser().setPoints((long) dataSnapshot.getValue());
                 usingClass.updateFragmentUIs();

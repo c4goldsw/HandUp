@@ -28,7 +28,7 @@
                 <ImageView
                     android:id="@+id/profile_card_picture"
                     android:src="@drawable/ic_mood_24dp"
-                    android:scaleType="fitCenter"
+                    android:scaleType="centerCrop"
                     android:layout_height="match_parent"
                     android:layout_width="match_parent"/>
 
@@ -113,7 +113,7 @@
                 <ImageView
                     android:id="@+id/content_card_picture"
                     android:src="@drawable/ic_assignment_24dp"
-                    android:scaleType="fitCenter"
+                    android:scaleType="centerCrop"
                     android:layout_height="match_parent"
                     android:layout_width="match_parent" />
 

@@ -45,13 +45,13 @@ public class Content {
     public void removeApproval(int uid){
         approvals.remove(new Integer(uid));
         contentDescription = description + ", " +
-                getApprovalCount() + ((getApprovalCount() == 1) ? " approve":" approves");
+                getApprovalCount() + ((getApprovalCount() == 1) ? " Approve":" Approves");
     }
 
     public void addApproval(int uid){
         approvals.add(new Integer(uid));
         contentDescription = description + ", " +
-                getApprovalCount() + ((getApprovalCount() == 1) ? " approve":" approves");
+                getApprovalCount() + ((getApprovalCount() == 1) ? " Approve":" Approves");
     }
 
     public int getApprovalCount(){
