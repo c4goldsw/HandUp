@@ -3,7 +3,6 @@ package com.handup.handup.controller.course.content;
 import android.app.DialogFragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +17,6 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.handup.handup.R;
 import com.handup.handup.controller.course.CourseActivity;
-import com.handup.handup.controller.course.user.SubscribeDialog;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.Content;
 
@@ -99,11 +97,14 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
 
+        Log.d(Constants.DEBUG_GENERAL, "Binding a view holder");
+
         Bitmap content = mValues.get(position).getContentBitmap();
         holder.mImageView.setImageBitmap(content);
-        holder.contentDescription1 = mValues.get(position).getDescription();
-        holder.contentDescription2 = mValues.get(position).getApprovalCount() + ((mValues.get(position).getApprovalCount() == 1) ? " Approve":" Approves");
-        holder.mTextView.setText(holder.contentDescription1);
+        holder.cotentOwnerName = mValues.get(position).getDescription();
+        holder.approvalDescription = mValues.get(position).getApprovalCount() +
+                ((mValues.get(position).getApprovalCount() == 1) ? " Approve":" Approves");
+        holder.mTextView.setText(holder.cotentOwnerName + ", " + holder.approvalDescription);
 
         Firebase approveChangeRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" +
         mValues.get(position).getOwner() + "/" + CourseActivity.getCourseID() + "/lastContent/approvals");
@@ -114,8 +115,10 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
                 if(dataSnapshot.getValue() == null)
                     return;
 
-                holder.mTextView.setText(holder.contentDescription1 + ", " + dataSnapshot.getChildrenCount()
-                        + ((dataSnapshot.getChildrenCount() == 1) ? " Approve":" Approves"));
+                Log.d(Constants.DEBUG_GENERAL, "Data change for content detected");
+
+                holder.mTextView.setText(holder.cotentOwnerName + ", " + dataSnapshot.getChildrenCount()
+                        + ((dataSnapshot.getChildrenCount() == 1) ? " Approve" : " Approves"));
             }
 
             @Override
@@ -147,8 +150,8 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
         public ImageView mImageView;
         public TextView mTextView;
 
-        public String contentDescription1;
-        public String contentDescription2;
+        public String cotentOwnerName;
+        public String approvalDescription;
 
         public ViewHolder(View view) {
             super(view);

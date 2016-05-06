@@ -224,16 +224,16 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                         data.getData(), this, 250, 259);
 
                 //users can only submit one piece of content per day - the previous content
-                //will be overwritten and removed from the news feed
+                //from a previous day will be overwritten and removed from the content feed
                 contentFragment.mRecyclerViewAdapter.removeItem(uid);
 
-                /*Content newContent = new Content(image);
+                Content newContent = new Content(image);
                 newContent.setApproved(new ArrayList<Integer>());
                 newContent.addApproval(Integer.parseInt(uid));
-                newContent.setDescription(MainActivity.getMeRequest().getMe().getFirstName() + " "
-                        + MainActivity.getMeRequest().getMe().getLastName() + ", 1 Approve");*/
+                newContent.setOwner(Integer.parseInt(uid));
+                newContent.setDescription(displayName);
 
-                //contentFragment.updateUI(newContent);
+                contentFragment.updateUI(newContent);
 
                 String imageString = ImageHandler.getImageString(image);
 

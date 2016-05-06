@@ -41,7 +41,10 @@
         <activity
             android:name=".controller.course.CourseActivity"
             android:label="@string/title_activity_course"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+        />
         <activity
             android:name=".controller.ContentDisplay"
             android:label="@string/title_activity_content_display"
