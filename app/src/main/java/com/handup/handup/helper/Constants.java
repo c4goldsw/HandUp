@@ -61,4 +61,9 @@ public class Constants {
     //LOGCAT DEBUGGING
     public static final String DEBUG_GENERAL = "DEBUG_GEN";
     public static final String DEBUG_FIREBASE = "DEBUG_FIREBASE";
+
+    //BLUETOOTH RELATED
+    public static final int BLUETOOTH_ENABLE = 89;
+    public static final int BLUETOOTH_MAKE_DISCOVERABLE = 90;
+    public static final String DIALOG_BUNDLE_NAME = "diaBunName";
 }

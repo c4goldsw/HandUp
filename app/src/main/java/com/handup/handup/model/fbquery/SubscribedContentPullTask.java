@@ -23,7 +23,7 @@ public class SubscribedContentPullTask extends AsyncTask<Void, Void, Void> {
     ContentPullTask.ContentQueryImplementer usingClass;
 
     public SubscribedContentPullTask(ArrayList<Integer> subscriptions, String courseID,
-         ContentPullTask.ContentQueryImplementer usingClass){
+        ContentPullTask.ContentQueryImplementer usingClass){
 
         this.subscriptions = subscriptions;
         this.courseID = courseID;
@@ -33,31 +33,35 @@ public class SubscribedContentPullTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
-        for(Integer uid : subscriptions) {
+        for(int i = 0; i < subscriptions.size(); ++i) {
 
-            Log.d(Constants.DEBUG_FIREBASE, "Pulling data");
-
-            Firebase ref = new Firebase(Constants.FIRE_BASE_URL + "/content/" + uid +
-                    "/" + courseID + "/lastContent");
+            Integer uid = subscriptions.get(i);
 
             final int uidRef = uid;
 
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            final Integer i2 = i;
+            new Firebase(Constants.FIRE_BASE_URL + "/content/" + uid +"/" + courseID +
+                    "/lastContent").addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    if(dataSnapshot.getValue() == null)
+                    if(dataSnapshot.getValue() == null) {
+
+                        if(i2 == subscriptions.size() - 1)
+                            usingClass.onContentQueryFinish(null, true);
+
                         return;
+                    }
 
                     String imageString = (String) dataSnapshot.child("image").getValue();
 
                     //get each approval
                     ArrayList<Integer> approvals = new ArrayList<Integer>();
                     for(Iterator<DataSnapshot> approvalIt = dataSnapshot.child(Constants.CONTENT_APPROVALS).getChildren().iterator();
-                            approvalIt.hasNext();) {
+                        approvalIt.hasNext();) {
 
-                            approvals.add(Integer.parseInt(approvalIt.next().getKey()));
+                        approvals.add(Integer.parseInt(approvalIt.next().getKey()));
                     }
 
                     Content c = new Content();
@@ -65,9 +69,10 @@ public class SubscribedContentPullTask extends AsyncTask<Void, Void, Void> {
                     c.setOwner(uidRef);
                     c.setImage(imageString);
                     c.setContentDescription((String) dataSnapshot.child(Constants.CONTENT_DESCRIPTION).getValue()
-                    , c.getApprovalCount() + ((c.getApprovalCount() == 1) ? " approve":" approves"));
+                            , c.getApprovalCount() + ((c.getApprovalCount() == 1) ? " approve" : " approves"));
 
-                    usingClass.onContentQueryFinish(c);
+
+                    usingClass.onContentQueryFinish(c, i2 == subscriptions.size() - 1);
 
                 }
 

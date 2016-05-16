@@ -152,7 +152,7 @@ public class ProfileFragment extends Fragment implements ContentPullTask.Content
     }
 
     @Override
-    public void onContentQueryFinish(Content c) {
+    public void onContentQueryFinish(Content c, boolean canStartChangingContentDescription) {
 
     }
 

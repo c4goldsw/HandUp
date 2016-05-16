@@ -12,9 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.handup.handup.HandUp;
 import com.handup.handup.R;
 import com.handup.handup.controller.course.CourseActivity;
 import com.handup.handup.helper.Constants;
+import com.handup.handup.model.InitialQueryTask;
 import com.handup.handup.model.StateManager;
 import com.handup.handup.model.User;
 import com.handup.handup.model.fbquery.MainActivityReloadQuery;
@@ -89,10 +91,9 @@ public class CourseFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
-        Log.d(Constants.DEBUG_GENERAL, "MainActivity: OnActivityCalled: Request:" + requestCode + ", Result: " + resultCode);
 
         if(requestCode == Constants.COURSE_ACT_FOR_RESULT){
-            new MainActivityReloadQuery(MainActivity.getmActivity()).execute();
+            new MainActivityReloadQuery(HandUp.getMainWR().get()).execute();
         }
     }
 

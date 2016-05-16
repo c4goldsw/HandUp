@@ -16,66 +16,6 @@ import com.handup.handup.helper.Constants;
  */
 public class StateManager {
 
-
-    /**
-     * TODO: OBSOLETE, REMOVE
-     * @param c Context for the app
-     * @return Returns true if the user is using the app is being loaded on the phone
-     * for the first time
-     *
-    public static boolean firstTimeUsing(Context c){
-
-        File file = c.getFileStreamPath(Constants.APP_STATE_FILE_PREFIX);
-
-        //first we check to see if
-        if(!file.exists()) {
-            createStateFile(file);
-
-            Log.d("StateManager","First Time using");
-            return true;
-
-        /*Once the user logs in for the first time, the state will eill exist - we need
-        to see if the user has logged in for the first time or not*
-        } else {
-
-            try{
-                RandomAccessFile rFile = new RandomAccessFile(file, "r");
-                rFile.seek(0);
-                if (rFile.readBoolean()) {
-
-                    Log.d("StateManager", "First Time using (login complete)");
-                    return true;
-                }
-                rFile.close();
-            }
-            catch (IOException e){
-                System.err.println(e);
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Sets the first time variable to false
-     * @param c Context of the app
-     *
-    public static void setFirstTimeToFalse(Context c){
-        File file = new File(c.getFilesDir(), Constants.APP_STATE_FILE_PREFIX);
-
-        Log.d("StateManager", "Setting first time to false");
-
-        try {
-            RandomAccessFile rFile = new RandomAccessFile(file, "rw");
-            rFile.seek(0);
-            rFile.writeBoolean(false);
-            rFile.close();
-        }
-        catch (IOException e){
-            System.err.println(e);
-        }
-    }*/
-
     /**
      * Getter method for active user's username
      * @param c Context of the app
@@ -141,8 +81,6 @@ public class StateManager {
             System.err.println(e);
         }
 
-        Log.d("StateManager","Logged in: " + loggedIn);
-
         return loggedIn;
     }
 
@@ -165,7 +103,6 @@ public class StateManager {
             System.err.println(e);
         }
 
-        Log.d("StateManager","Logged in: " + value);
     }
 
     /**

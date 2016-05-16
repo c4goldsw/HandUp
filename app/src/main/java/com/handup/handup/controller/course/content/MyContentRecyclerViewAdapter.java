@@ -3,7 +3,6 @@ package com.handup.handup.controller.course.content;
 import android.app.DialogFragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,19 +11,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.handup.handup.R;
 import com.handup.handup.controller.course.CourseActivity;
-import com.handup.handup.controller.course.user.SubscribeDialog;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.Content;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-import static com.handup.handup.helper.MiscFunctions.linearSearchArray;
+import com.handup.handup.helper.MiscFunctions;
 
 public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContentRecyclerViewAdapter.ViewHolder> {
 
@@ -32,40 +34,58 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
     private int mScreenWidth;
     private int mColumnCount;
     private boolean enableVoting;
+    private boolean isForContentDisplay;
 
     private final ContentFragment.OnContentInteractionListener mListener;
 
-    public MyContentRecyclerViewAdapter(List<Content> items, int mScreenWidth, int mColumnCount,
-        boolean enableVoting, ContentFragment.OnContentInteractionListener mListener) {
+    private ArrayList<ValueEventListener> resultHandlerArray = new ArrayList<>();
+    private ArrayList<Firebase> refArray = new ArrayList<>();
 
-        mValues = items;
+    public MyContentRecyclerViewAdapter(int mScreenWidth, int mColumnCount,
+        boolean enableVoting, ContentFragment.OnContentInteractionListener mListener,
+        boolean isForContentDisplay) {
+
+        mValues = Collections.synchronizedList(new ArrayList<Content>());
         this.mScreenWidth = mScreenWidth;
         this.mColumnCount = mColumnCount;
         this.enableVoting = enableVoting;
         this.mListener = mListener;
+        this.isForContentDisplay = isForContentDisplay;
     }
 
     public void removeItem(String uidString){
         int uid = Integer.parseInt(uidString);
 
-        for(Content c : mValues){
+        Iterator i = mValues.iterator();
 
-            Log.d(Constants.DEBUG_GENERAL, "uid: " + uid + ". Owner: " + c.getOwner());
-            if(c.getOwner() ==  uid){
-                mValues.remove(c);
+        while(i.hasNext()) {
+            Content c = (Content) i.next();
+            if (c.getOwner() == uid) {
+                i.remove();
                 notifyDataSetChanged();
+                break;
             }
         }
     }
 
     public void addItem(Content content){
-
         mValues.add(content);
     }
 
+    /**
+     * This method is used to remove listener relationships from FB references to ensure
+     * GC occurs
+     */
+    public void emptyFbLists(){
+        for(int i = 0; i < refArray.size(); ++i){
+            refArray.get(i).removeEventListener(resultHandlerArray.get(i));
+        }
+    }
+
     public void removeApproval(int owner, int uid){
-        for(Content c : mValues){
-            if(c.getOwner() == owner){
+
+        for (Content c : mValues) {
+            if (c.getOwner() == owner) {
 
                 c.removeApproval(uid);
             }
@@ -74,17 +94,10 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
     public void addApproval(int owner, int uid){
 
-        Log.d(Constants.DEBUG_GENERAL, "Attemping to add an approve" );
-        for(Content c : mValues){
-            if(c.getOwner() == owner){
+        for (Content c : mValues) {
+            if (c.getOwner() == owner) {
 
                 c.addApproval(uid);
-
-                Log.d(Constants.DEBUG_GENERAL, "Approve added");
-
-                for(Integer i : c.getApprovals()){
-                    Log.d(Constants.DEBUG_GENERAL, "Approver: " + i);
-                }
             }
         }
     }
@@ -101,40 +114,58 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
         Bitmap content = mValues.get(position).getContentBitmap();
         holder.mImageView.setImageBitmap(content);
-        holder.contentDescription1 = mValues.get(position).getDescription();
-        holder.contentDescription2 = mValues.get(position).getApprovalCount() + ((mValues.get(position).getApprovalCount() == 1) ? " Approve":" Approves");
-        holder.mTextView.setText(holder.contentDescription1);
+        holder.cotentOwnerName = mValues.get(position).getDescription();
+        if(!isForContentDisplay) {
+            holder.approvalDescription = mValues.get(position).getApprovalCount() +
+                ((mValues.get(position).getApprovalCount() == 1) ? " Approve" : " Approves");
 
-        Firebase approveChangeRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" +
-        mValues.get(position).getOwner() + "/" + CourseActivity.getCourseID() + "/lastContent/approvals");
+            holder.approveChangeRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" +
+            mValues.get(position).getOwner() + "/" + CourseActivity.getCourseID() + "/lastContent/approvals");
+            holder.vel = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.getValue() == null)
+                        holder.mTextView.setText(holder.cotentOwnerName + ", " +"0 Approves");
 
-        approveChangeRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue() == null)
-                    return;
 
-                holder.mTextView.setText(holder.contentDescription1 + ", " + dataSnapshot.getChildrenCount()
-                        + ((dataSnapshot.getChildrenCount() == 1) ? " Approve":" Approves"));
-            }
+                    holder.mTextView.setText(holder.cotentOwnerName + ", " + dataSnapshot.getChildrenCount()
+                            + ((dataSnapshot.getChildrenCount() == 1) ? " Approve" : " Approves"));
+                }
 
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
 
-            }
-        });
+                }
+            };
+            holder.approveChangeRef.addValueEventListener(holder.vel);
+
+            //add the listener and ref into the two direct-access arrays
+            refArray.add(holder.approveChangeRef);
+            resultHandlerArray.add(holder.vel);
+
+            holder.mTextView.setText(holder.cotentOwnerName + ", " + holder.approvalDescription);
+        }
+        else{
+            holder.mTextView.setText(holder.cotentOwnerName);
+        }
+
 
         //set the height of each item to be equal to it's width
         holder.mImageView.getLayoutParams().height = (mScreenWidth - (4 + 4*mColumnCount)) /mColumnCount;
         holder.mImageView.getLayoutParams().width = mScreenWidth - 16;
+    }
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    @Override
+    public void onViewRecycled(ViewHolder holder){
 
+        holder.approveChangeRef.removeEventListener(holder.vel);
 
-            }
-        });
+        refArray.remove(holder.approveChangeRef);
+        resultHandlerArray.remove(holder.vel);
+
+        holder.vel = null;
+        holder.approveChangeRef = null;
+        holder.mImageView.setImageBitmap(null);
     }
 
     @Override
@@ -147,8 +178,11 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
         public ImageView mImageView;
         public TextView mTextView;
 
-        public String contentDescription1;
-        public String contentDescription2;
+        public Firebase approveChangeRef;
+        public ValueEventListener vel;
+
+        public String cotentOwnerName = "";
+        public String approvalDescription = "";
 
         public ViewHolder(View view) {
             super(view);
@@ -169,14 +203,12 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
 
             Bundle dialogInfo = new Bundle();
 
-            if(linearSearchArray(mValues.get(getAdapterPosition()).getApprovals(),
+            if(MiscFunctions.linearSearchArray(mValues.get(getAdapterPosition()).getApprovals(),
                     Integer.parseInt(CourseActivity.getUid()))){
 
-                Log.d(Constants.DEBUG_GENERAL, "Approved");
                 dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_BOOL_VAL, true);
             }else{
 
-                Log.d(Constants.DEBUG_GENERAL, "Not approved");
                 dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_BOOL_VAL, false);
             }
 

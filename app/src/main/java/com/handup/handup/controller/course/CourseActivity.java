@@ -1,6 +1,8 @@
 package com.handup.handup.controller.course;
 
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +17,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -26,11 +29,15 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.handup.handup.HandUp;
 import com.handup.handup.R;
 import com.handup.handup.controller.course.content.ApproveDialog;
 import com.handup.handup.controller.course.content.ContentFragment;
+import com.handup.handup.controller.course.content.MyContentRecyclerViewAdapter;
+import com.handup.handup.controller.course.user.ConnectDialog;
 import com.handup.handup.controller.course.user.SubscribeDialog;
 import com.handup.handup.controller.course.user.UserFragment;
+import com.handup.handup.controller.course.user.UserRecyclerViewAdapter;
 import com.handup.handup.controller.main.MainActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.helper.ImageHandler;
@@ -54,7 +61,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         ContentFragment.OnContentInteractionListener, CourseUsersQueryTask.CourseUserQueryImplementer,
         GetLectureTimes.OnLectureTimeGetFinish, ContentPullTask.ContentQueryImplementer,
         GetSubscriptionTask.GetSubscriptionTaskUser, SubscribeDialog.SubscribeDialogListener,
-        ApproveDialog.ApproveDialogListener{
+        ApproveDialog.ApproveDialogListener, ConnectDialog.ConnectDialogListener{
 
     /*===========================================================================================
     Variables
@@ -88,7 +95,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     //The following arrays are used for business logic
     private ArrayList<User> users = new ArrayList<>();
     private ArrayList<Date> lectureTimes;
-    public static ArrayList<Integer> subscriptionIDs;
+    private ArrayList<Integer> subscriptionIDs;
 
     private int numberOfPeers;
     private int peerCounter = 0;
@@ -97,6 +104,8 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     private ContentFragment contentFragment;
 
     private Date selectedLecture;
+
+    public static boolean canStartChangingSubscription = false;
 
     /*===========================================================================================
     Model/ Controller methods
@@ -119,13 +128,33 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
 
         setupTabs();
 
+        //have to reset, since the variable is static2
+        canStartChangingSubscription = false;
+
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                //check to see which tab we're pressing the button in
                 if (currentTab == 0) {
-                    //TODO: Add user bluetooth connection functionality
+
+                    if (HandUp.doesSupportBluetooth()) {
+
+                        //check to see if Bluetooth is enabled on this device - enable if not
+                        if (!HandUp.getBluetoothAdapter().isEnabled()) {
+                            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), Constants.BLUETOOTH_ENABLE);
+                        } else {
+                            Bundle dialogInfo = new Bundle();
+                            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_NAME, MainActivity.getUser().getDisplayName());
+                            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_COURSE_ID, Integer.toString(courseID));
+
+                            //Taken from http://tinyurl.com/3xatjj5
+                            DialogFragment newFragment = new ConnectDialog();
+                            newFragment.setArguments(dialogInfo);
+                            newFragment.show(getFragmentManager(), "ConnectDialog");
+                        }
+                    }
 
                 } else if (currentTab == 1) {
                     submitContent(view);
@@ -133,11 +162,24 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
             }
         });
 
-        Firebase.setAndroidContext(this);
-
         new GetLectureTimes(Integer.toString(courseID), this).execute();
         new CourseUsersQueryTask(courseID, this, userName, uid).execute();
         new GetSubscriptionTask(uid, Integer.toString(courseID), this).execute();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+
+        LinearLayoutManager lmu = (LinearLayoutManager) userFragment.mRecyclerView.getLayoutManager();
+        LinearLayoutManager lmc = (LinearLayoutManager) contentFragment.mRecyclerView.getLayoutManager();
+
+        Log.d(Constants.DEBUG_GENERAL, "Stopping! Values for lmu: first:" + lmu.findFirstVisibleItemPosition() +
+                ", last: " + lmu.findLastVisibleItemPosition() + ". Values for lmc: first: " + lmc.findFirstVisibleItemPosition() +
+                ", last: " + lmc.findLastVisibleItemPosition());
+
+        userFragment.mRecyclerViewAdapater.emptyFbLists();
+        contentFragment.mRecyclerViewAdapter.emptyFbLists();
     }
 
     //TODO: change currentTimeMillis to something system-time independent
@@ -192,11 +234,9 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                         selectedLecture = lectureTimes.get(0);
                         startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                                 , Constants.TAKE_PHOTO);
-                    }
-                    else{
-                        Snackbar.make(view, "You've already submitted content for today! You can" +
-                                " submit content during your next lecture ", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
+                    } else {
+                        Snackbar.make(view, "You've already submitted content for today! Try again" +
+                                " later", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     }
                 }
             }
@@ -224,16 +264,16 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                         data.getData(), this, 250, 259);
 
                 //users can only submit one piece of content per day - the previous content
-                //will be overwritten and removed from the news feed
+                //from a previous day will be overwritten and removed from the content feed
                 contentFragment.mRecyclerViewAdapter.removeItem(uid);
 
-                /*Content newContent = new Content(image);
+                Content newContent = new Content(image);
                 newContent.setApproved(new ArrayList<Integer>());
                 newContent.addApproval(Integer.parseInt(uid));
-                newContent.setDescription(MainActivity.getMeRequest().getMe().getFirstName() + " "
-                        + MainActivity.getMeRequest().getMe().getLastName() + ", 1 Approve");*/
+                newContent.setOwner(Integer.parseInt(uid));
+                newContent.setDescription(displayName);
 
-                //contentFragment.updateUI(newContent);
+                contentFragment.updateUI(newContent);
 
                 String imageString = ImageHandler.getImageString(image);
 
@@ -247,6 +287,25 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        else if(requestCode == Constants.BLUETOOTH_ENABLE && resultCode == AppCompatActivity.RESULT_OK){
+
+            Intent bluetoothDiscoverySettings = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            bluetoothDiscoverySettings.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0);
+            startActivityForResult(bluetoothDiscoverySettings, Constants.BLUETOOTH_MAKE_DISCOVERABLE);
+        }
+        else if(requestCode == Constants.BLUETOOTH_MAKE_DISCOVERABLE && resultCode == 1){
+
+
+
+            Bundle dialogInfo = new Bundle();
+            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_NAME, MainActivity.getUser().getDisplayName());
+            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_COURSE_ID, Integer.toString(courseID));
+
+            //Taken from http://tinyurl.com/3xatjj5
+            DialogFragment newFragment = new ConnectDialog();
+            newFragment.setArguments(dialogInfo);
+            newFragment.show(getFragmentManager(), "ConnectDialog");
         }
     }
 
@@ -387,6 +446,11 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     }
 
     @Override
+    public ArrayList<Integer> getSubscriptionIDs() {
+        return subscriptionIDs;
+    }
+
+    @Override
     public void setContentFragment(ContentFragment contentFragment){ this.contentFragment = contentFragment; }
 
     @Override
@@ -409,8 +473,6 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
 
                 if (dataSnapshot.getValue() == null)
                     return;
-
-                Log.d(Constants.DEBUG_GENERAL, "Query returned: " + dataSnapshot.toString());
 
                 String imageString = (String) dataSnapshot.child("image").getValue();
 
@@ -440,7 +502,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
             }
         });
 
-        CourseActivity.subscriptionIDs.add(Integer.parseInt(uid));
+        subscriptionIDs.add(Integer.parseInt(uid));
     }
 
     /*===========================================================================================
@@ -460,9 +522,12 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     }
 
     @Override
-    public void onContentQueryFinish(Content c) {
+    public void onContentQueryFinish(Content c, boolean canStartChangingSubscription) {
 
-        contentFragment.updateUI(c);
+        this.canStartChangingSubscription = canStartChangingSubscription;
+
+        if(c != null) //TODO: Consider removing
+            contentFragment.updateUI(c);
     }
 
     @Override
@@ -499,5 +564,10 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     @Override
     public void addApproval(String oid) {
         contentFragment.mRecyclerViewAdapter.addApproval(Integer.parseInt(oid), Integer.parseInt(uid));
+    }
+
+    @Override
+    public void onConnectionCompleted() {
+
     }
 }

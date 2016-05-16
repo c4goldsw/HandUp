@@ -52,8 +52,8 @@ public class ContentDisplay extends AppCompatActivity implements ContentPullTask
             mRecyclerView.setLayoutManager(m);
         }
 
-        mRecyclerViewAdapter = new MyContentRecyclerViewAdapter(new ArrayList<Content>(),
-                dm.widthPixels, mColumnCount, false, this);
+        mRecyclerViewAdapter = new MyContentRecyclerViewAdapter(
+                dm.widthPixels, mColumnCount, false, this, true);
 
         mRecyclerView.addItemDecoration(new RecyclerItemSpacing((int) (8 * dm.density), mColumnCount));
         mRecyclerView.setAdapter(mRecyclerViewAdapter);
@@ -72,7 +72,7 @@ public class ContentDisplay extends AppCompatActivity implements ContentPullTask
     }
 
     @Override
-    public void onContentQueryFinish(Content c) {
+    public void onContentQueryFinish(Content c, boolean canStartChangingContentDescription) {
         updateUI(c);
     }
 

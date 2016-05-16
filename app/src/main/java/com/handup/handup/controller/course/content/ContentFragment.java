@@ -7,11 +7,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.handup.handup.R;
+import com.handup.handup.controller.main.MainActivity;
+import com.handup.handup.helper.Constants;
 import com.handup.handup.model.Content;
 import com.handup.handup.view.RecyclerItemSpacing;
 
@@ -35,7 +38,7 @@ public class ContentFragment extends Fragment {
 
     private OnContentInteractionListener mListener;
 
-    private RecyclerView mRecyclerView;
+    public RecyclerView mRecyclerView;
     public MyContentRecyclerViewAdapter mRecyclerViewAdapter;
 
     /**
@@ -88,8 +91,7 @@ public class ContentFragment extends Fragment {
                 mRecyclerView.setLayoutManager(m);
             }
 
-            mRecyclerViewAdapter = new MyContentRecyclerViewAdapter
-                    (new ArrayList<Content>(), mScreenWidth, mColumnCount, true, mListener);
+            mRecyclerViewAdapter = new MyContentRecyclerViewAdapter(mScreenWidth, mColumnCount, true, mListener, false);
 
             mRecyclerView.addItemDecoration(new RecyclerItemSpacing( (int) (8*mDensity), mColumnCount));
             mRecyclerView.setAdapter(mRecyclerViewAdapter);
@@ -101,6 +103,12 @@ public class ContentFragment extends Fragment {
     public void updateUI(Content c){
 
         if(mRecyclerViewAdapter != null){
+
+            /*whenever content is added, it is locally included into the recycler view AND uploaded to FB.
+            But, due to low memory situations, the activity might be destroyed and reloaded when onActivityResult is called.
+            Thus, we'll have to ensure we don't load the same content twice after pulling the dup from FB*/
+            if(c.getOwner() == Integer.parseInt(MainActivity.getUser().getUid()))
+               mRecyclerViewAdapter.removeItem(MainActivity.getUser().getUid());
 
             mRecyclerViewAdapter.addItem(c);
             mRecyclerViewAdapter.notifyDataSetChanged();

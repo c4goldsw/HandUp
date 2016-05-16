@@ -1,5 +1,6 @@
 package com.handup.handup.controller.main;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,16 +15,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.firebase.client.Firebase;
+import com.handup.handup.HandUp;
 import com.handup.handup.R;
 import com.handup.handup.controller.login.LoginActivity;
 import com.handup.handup.helper.Constants;
 import com.handup.handup.model.Course;
-import com.handup.handup.model.fbquery.MainActivityReloadQuery;
 import com.handup.handup.model.lsquery.LsQueryObject;
 import com.handup.handup.model.InitialQueryTask;
 import com.handup.handup.model.StateManager;
@@ -39,7 +38,7 @@ import java.util.ArrayList;
  * this tutorial</a> and used code from it in order to create the tab views.
  */
 public class MainActivity extends AppCompatActivity implements ProfileFragment.OnProfileInteractionListener,
-CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractionListener,
+CourseFragment.OnFragmentInteractionListener,
         InitialQueryTask.InitialQueryUser, MenuFragment.OnFragmentInteractionListener {
 
     /*===========================================================================================
@@ -99,8 +98,6 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     private ProfileFragment profileFragment;
     private CourseFragment courseFragment;
 
-    private static MainActivity mActivity;
-
     /*===========================================================================================
     Model / Controller related methods
     ===========================================================================================*/
@@ -111,11 +108,9 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Firebase.setAndroidContext(this);
-        mActivity = this;
-
-        //before loading the main activity, we determine what state the user was last in
-        determineState();
+        //before loading the main activity, we determine what state the user was last in.
+        //Once we're logged in, do initial setup
+        InitialSetup();
 
         setupTabs();
     }
@@ -125,9 +120,12 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
      * app was.  If the user wasn't logged in, they're sent to the login screen. Otherwise, we
      * load the app from here
      */
-    private void determineState(){
+    private void InitialSetup(){
 
         if(StateManager.isLoggedIn(this)){
+
+            //Set a weak reference to the main activity
+            HandUp.setMainWR(this);
 
             new InitialQueryTask(StateManager.getUserName(this), this).execute();
 
@@ -166,11 +164,6 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
-        /*Log.d(Constants.DEBUG_GENERAL, "MainActivity: OnActivityCalled: Request:" + requestCode + ", Result: " + resultCode);
-
-        if(requestCode == Constants.COURSE_ACT_FOR_RESULT){
-            new MainActivityReloadQuery(MainActivity.getmActivity()).execute();
-        }*/
     }
 
     /*===========================================================================================
@@ -197,9 +190,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
             private int currentTab = 0;
 
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
             @Override
             public void onPageSelected(int position) {
@@ -211,9 +202,7 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
+            public void onPageScrollStateChanged(int state) {}
         });
 
         /* Here, we start adding the nessescary components for the actual tabs*/
@@ -236,7 +225,6 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
         tabLayout.getTabAt(0).setIcon(icons[0]);
         tabLayout.getTabAt(1).setIcon(icons[1]);
         tabLayout.getTabAt(2).setIcon(icons[2]);
-
     }
 
     @Override
@@ -274,9 +262,6 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
     public void onCourseSelect(Uri uri) {}
 
     @Override
-    public void onGroupSelect(Uri uri) {}
-
-    @Override
     public void menuFragmentInteraction(int option) {
 
         if(option == Constants.MENUFRAGMENT_LOGOUT)
@@ -305,12 +290,8 @@ CourseFragment.OnFragmentInteractionListener, GroupFragment.OnFragmentInteractio
 
         return courses;
     }
-    public static void setCourses(ArrayList<Course> c){
+    public static void setCourses(ArrayList<Course> c) {
 
         courses = c;
-    }
-
-    public static MainActivity getmActivity(){
-        return mActivity;
     }
 }

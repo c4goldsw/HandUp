@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.handup.handup.controller.main.CourseFragment;
-import com.handup.handup.controller.main.GroupFragment;
 import com.handup.handup.controller.main.MainActivity;
 import com.handup.handup.controller.main.MenuFragment;
 import com.handup.handup.controller.main.ProfileFragment;

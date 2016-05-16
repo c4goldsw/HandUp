@@ -55,7 +55,7 @@ public class Content {
     }
 
     public int getApprovalCount(){
-        return approvalCount;
+        return approvals.size();
     }
 
     public ArrayList<Integer> getApprovals(){

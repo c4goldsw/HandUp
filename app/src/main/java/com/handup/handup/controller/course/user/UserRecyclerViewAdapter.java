@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,20 +25,32 @@ import com.handup.handup.model.User;
 
 import java.util.ArrayList;
 
-import static com.handup.handup.helper.MiscFunctions.binarySearchArray;
-import static com.handup.handup.helper.MiscFunctions.linearSearchArray;
+import com.handup.handup.helper.MiscFunctions;
 
 public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder> {
 
     private ArrayList<User> mValues;
     private final UserFragment.UserListFragmentInteractionListener mListener;
 
-    public UserRecyclerViewAdapter(ArrayList<User> items, UserFragment.UserListFragmentInteractionListener listener) {
-        mValues = items;
+    private ArrayList<ValueEventListener> resultHandlerArray = new ArrayList<>();
+    private ArrayList<Firebase> refArray = new ArrayList<>();
+
+    public UserRecyclerViewAdapter(UserFragment.UserListFragmentInteractionListener listener) {
+        mValues = new ArrayList<User>();
         mListener = listener;
     }
 
     public void addItem(User u){mValues.add(u);}
+
+    /**
+     * This method is used to remove listener relationships from FB references to ensure
+     * GC occurs
+     */
+    public void emptyFbLists(){
+        for(int i = 0; i < refArray.size(); ++i){
+            refArray.get(i).removeEventListener(resultHandlerArray.get(i));
+        }
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -49,13 +62,12 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
 
-
         holder.mNameView.setText(mValues.get(position).getDisplayName());
         holder.mPointsView.setText("Points: " + mValues.get(position).getPoints());
         holder.uid = mValues.get(position).getUid();
 
-        Firebase pointListener = new Firebase(Constants.FIRE_BASE_URL + "/users/" + holder.uid + "/points");
-        pointListener.addValueEventListener(new ValueEventListener() {
+        holder.pointListener = new Firebase(Constants.FIRE_BASE_URL + "/users/" + holder.uid + "/points");
+        holder.vel = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -69,7 +81,12 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
             public void onCancelled(FirebaseError firebaseError) {
 
             }
-        });
+        };
+        holder.pointListener.addValueEventListener(holder.vel);
+
+        //add the listener and ref into the two direct-access arrays
+        refArray.add(holder.pointListener);
+        resultHandlerArray.add(holder.vel);
 
         byte[] profilePictureArray = mValues.get(position).getInAppProfilePicture();
 
@@ -92,9 +109,23 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mListener) {}
+                if (null != mListener) {
+                }
             }
         });
+    }
+
+    @Override
+    public void onViewRecycled(ViewHolder holder){
+
+        holder.pointListener.removeEventListener(holder.vel);
+
+        refArray.remove(holder.pointListener);
+        resultHandlerArray.remove(holder.vel);
+
+        holder.vel = null;
+        holder.pointListener = null;
+        holder.mAvatarView.setImageBitmap(null);
     }
 
     @Override
@@ -108,6 +139,8 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         public final TextView mNameView;
         public final TextView mPointsView;
         public final ImageView mAvatarView;
+        public Firebase pointListener;
+        public ValueEventListener vel;
 
         //this uid is used to check to see if the app user is subscribed to this person or not
         public String uid;
@@ -139,11 +172,11 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
             Bundle dialogInfo = new Bundle();
 
-            if(CourseActivity.subscriptionIDs == null){
+            if(!CourseActivity.canStartChangingSubscription){
 
                 return; //Subscription info hasn't been loaded yet
             }
-            else if(linearSearchArray(CourseActivity.subscriptionIDs, Integer.parseInt(uid))){
+            else if(MiscFunctions.linearSearchArray(mListener.getSubscriptionIDs(), Integer.parseInt(uid))){
 
                 dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_BOOL_VAL, true);
             }else{

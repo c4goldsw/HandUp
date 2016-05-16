@@ -25,8 +25,8 @@ public class UserFragment extends Fragment {
 
     private UserListFragmentInteractionListener mListener;
 
-    RecyclerView mRecyclerView;
-    UserRecyclerViewAdapter mRecyclerViewAdapater;
+    public RecyclerView mRecyclerView;
+    public UserRecyclerViewAdapter mRecyclerViewAdapater;
 
 
     /**
@@ -60,8 +60,7 @@ public class UserFragment extends Fragment {
             mRecyclerView = (RecyclerView) view;
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-            mRecyclerViewAdapater = new UserRecyclerViewAdapter(new ArrayList<User>(),
-                    mListener);
+            mRecyclerViewAdapater = new UserRecyclerViewAdapter(mListener);
 
             mRecyclerView.setAdapter(mRecyclerViewAdapater);
         }
@@ -117,5 +116,6 @@ public class UserFragment extends Fragment {
         Context getActivityContext();
         void setUserFragment(UserFragment userFragment);
         Activity getActivity();
+        ArrayList<Integer> getSubscriptionIDs();
     }
 }

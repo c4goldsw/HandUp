@@ -61,7 +61,7 @@ public class ContentPullTask extends AsyncTask<Void, Void, Void> {
                         c.setContentDescription("", "");
                     }
 
-                    cu.onContentQueryFinish(c);
+                    cu.onContentQueryFinish(c, false);
                 }
             }
 
@@ -76,6 +76,6 @@ public class ContentPullTask extends AsyncTask<Void, Void, Void> {
 
     public interface ContentQueryImplementer{
 
-        void onContentQueryFinish(Content c);
+        void onContentQueryFinish(Content c, boolean subscribedContentPullTask);
     }
 }
