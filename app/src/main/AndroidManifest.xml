@@ -47,8 +47,15 @@
             android:name=".controller.course.CourseActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_course"
+<<<<<<< HEAD
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+=======
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+        />
+>>>>>>> b72012e27f8e24bf5361492b439d90eb15970f25
         <activity
             android:name=".controller.ContentDisplay"
             android:label="@string/title_activity_content_display"
