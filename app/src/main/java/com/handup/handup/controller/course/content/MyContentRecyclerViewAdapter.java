@@ -112,12 +112,10 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
 
-        Log.d(Constants.DEBUG_GENERAL, "Binding a view holder");
-
         Bitmap content = mValues.get(position).getContentBitmap();
         holder.mImageView.setImageBitmap(content);
         holder.cotentOwnerName = mValues.get(position).getDescription();
-<<<<<<< HEAD
+
         if(!isForContentDisplay) {
             holder.approvalDescription = mValues.get(position).getApprovalCount() +
                 ((mValues.get(position).getApprovalCount() == 1) ? " Approve" : " Approves");
@@ -134,11 +132,6 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
                     holder.mTextView.setText(holder.cotentOwnerName + ", " + dataSnapshot.getChildrenCount()
                             + ((dataSnapshot.getChildrenCount() == 1) ? " Approve" : " Approves"));
                 }
-=======
-        holder.approvalDescription = mValues.get(position).getApprovalCount() +
-                ((mValues.get(position).getApprovalCount() == 1) ? " Approve":" Approves");
-        holder.mTextView.setText(holder.cotentOwnerName + ", " + holder.approvalDescription);
->>>>>>> b72012e27f8e24bf5361492b439d90eb15970f25
 
                 @Override
                 public void onCancelled(FirebaseError firebaseError) {
@@ -147,17 +140,9 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
             };
             holder.approveChangeRef.addValueEventListener(holder.vel);
 
-<<<<<<< HEAD
             //add the listener and ref into the two direct-access arrays
             refArray.add(holder.approveChangeRef);
             resultHandlerArray.add(holder.vel);
-=======
-                Log.d(Constants.DEBUG_GENERAL, "Data change for content detected");
-
-                holder.mTextView.setText(holder.cotentOwnerName + ", " + dataSnapshot.getChildrenCount()
-                        + ((dataSnapshot.getChildrenCount() == 1) ? " Approve" : " Approves"));
-            }
->>>>>>> b72012e27f8e24bf5361492b439d90eb15970f25
 
             holder.mTextView.setText(holder.cotentOwnerName + ", " + holder.approvalDescription);
         }
@@ -194,16 +179,11 @@ public class MyContentRecyclerViewAdapter extends RecyclerView.Adapter<MyContent
         public ImageView mImageView;
         public TextView mTextView;
 
-<<<<<<< HEAD
         public Firebase approveChangeRef;
         public ValueEventListener vel;
 
-        public String cotentOwnerName = "";
-        public String approvalDescription = "";
-=======
         public String cotentOwnerName;
         public String approvalDescription;
->>>>>>> b72012e27f8e24bf5361492b439d90eb15970f25
 
         public ViewHolder(View view) {
             super(view);

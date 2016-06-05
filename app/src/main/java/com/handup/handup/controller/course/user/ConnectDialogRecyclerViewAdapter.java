@@ -1,5 +1,6 @@
 package com.handup.handup.controller.course.user;
 
+import android.bluetooth.BluetoothDevice;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.handup.handup.R;
+import com.handup.handup.bluetooth.BluetoothDataListener;
+import com.handup.handup.bluetooth.OpenBluetoothClientConnection;
 import com.handup.handup.helper.Constants;
 
 import java.util.ArrayList;
@@ -17,15 +20,18 @@ import java.util.ArrayList;
  */
 public class ConnectDialogRecyclerViewAdapter extends RecyclerView.Adapter<ConnectDialogRecyclerViewAdapter.ViewHolder> {
 
-    ArrayList<ActiveUser> mValues;
+    ArrayList<BluetoothDevice> mValues;
+    OpenBluetoothClientConnection bluetoothClientConnection;
+    private BluetoothDataListener mListener;
 
-    public ConnectDialogRecyclerViewAdapter(){
-        mValues = new ArrayList<ActiveUser>();
+    public ConnectDialogRecyclerViewAdapter(BluetoothDataListener listener){
+        mValues = new ArrayList<BluetoothDevice>();
+        mListener = listener;
     }
 
-    public void addItem(String data){
+    public void addItem(BluetoothDevice bd){
         Log.d(Constants.DEBUG_GENERAL, "ContentDialogRecyclerThing: adding something!");
-        mValues.add(new ActiveUser(data));
+        mValues.add(bd);
     }
 
     @Override
@@ -38,44 +44,39 @@ public class ConnectDialogRecyclerViewAdapter extends RecyclerView.Adapter<Conne
 
     @Override
     public void onBindViewHolder(ConnectDialogRecyclerViewAdapter.ViewHolder holder, int position) {
-        holder.name.setText(mValues.get(position).name);
+        holder.name.setText(mValues.get(position).getName());
+        holder.detectedDevice = mValues.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mValues.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView name;
+        BluetoothDevice detectedDevice;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             name = (TextView) itemView.findViewById(R.id.dialog_connect_text_view);
+            name.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
+            //start a connection with this device
+            Log.d(Constants.DEBUG_GENERAL, "Touching the list in the connect dialog!");
 
-        }
-    }
+            if(bluetoothClientConnection != null){
+                bluetoothClientConnection.cancel();
+            }
 
-    public class ActiveUser{
-
-        private String name;
-
-        public ActiveUser(String name){
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
+            OpenBluetoothClientConnection bluetoothClientConnection =
+                    new OpenBluetoothClientConnection(detectedDevice, mListener);
+            bluetoothClientConnection.start();
         }
     }
 }

@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 public class CourseActivity extends AppCompatActivity implements UserFragment.UserListFragmentInteractionListener,
         ContentFragment.OnContentInteractionListener, CourseUsersQueryTask.CourseUserQueryImplementer,
@@ -97,15 +98,13 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     private ArrayList<Date> lectureTimes;
     private ArrayList<Integer> subscriptionIDs;
 
-    private int numberOfPeers;
-    private int peerCounter = 0;
-
     private UserFragment userFragment;
     private ContentFragment contentFragment;
 
     private Date selectedLecture;
 
     public static boolean canStartChangingSubscription = false;
+    boolean canStartLookingForOtherUsers = false;
 
     /*===========================================================================================
     Model/ Controller methods
@@ -125,42 +124,62 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         uid      = getIntent().getStringExtra(Constants.PUT_EXTRA_UID);
         getSupportActionBar().setTitle(courseName = getIntent().getStringExtra(Constants.PUT_EXTRA_COURSE_NAME));
         displayName = getIntent().getStringExtra(Constants.PUT_EXTRA_DISPLAY_NAME);
-
         setupTabs();
 
-        //have to reset, since the variable is static2
+        //have to reset, since the variable is static
         canStartChangingSubscription = false;
 
-        mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
+        //mFab = (FloatingActionButton) findViewById(R.id.fab);
+        /*mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 //check to see which tab we're pressing the button in
                 if (currentTab == 0) {
 
-                    if (HandUp.doesSupportBluetooth()) {
+                    //no longer implementing this feature, but leaving code in
+                    if (0 == 1/*HandUp.doesSupportBluetooth()) {
 
-                        //check to see if Bluetooth is enabled on this device - enable if not
-                        if (!HandUp.getBluetoothAdapter().isEnabled()) {
-                            startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), Constants.BLUETOOTH_ENABLE);
+                        if(!canStartLookingForOtherUsers){
+                            Snackbar.make(view, "Please wait for all user IDs to be retrieved",
+                                    Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                            return;
+                        }
+
+                        //check to see if the phone is discoverable or not - make discoverable otherwise
+                        if (HandUp.getBluetoothAdapter().getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+                            Intent bluetoothDiscoverySettings = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                            bluetoothDiscoverySettings.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0);
+                            startActivityForResult(bluetoothDiscoverySettings, Constants.BLUETOOTH_MAKE_DISCOVERABLE);
                         } else {
                             Bundle dialogInfo = new Bundle();
+
+                            //get all the UIDs of the other course users
+                            ArrayList<String> uidStrings = new ArrayList<String>();
+                            for(User u : users){
+                                uidStrings.add(u.getUid());
+                            }
+
+                            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_OID, uidStrings);
                             dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_NAME, MainActivity.getUser().getDisplayName());
                             dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_COURSE_ID, Integer.toString(courseID));
+                            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_UID, uid);
 
                             //Taken from http://tinyurl.com/3xatjj5
                             DialogFragment newFragment = new ConnectDialog();
                             newFragment.setArguments(dialogInfo);
                             newFragment.show(getFragmentManager(), "ConnectDialog");
                         }
+                    }else{
+                        Snackbar.make(view, "Uh oh! Bluetooth isn't supported on this device!",
+                                Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     }
 
                 } else if (currentTab == 1) {
                     submitContent(view);
                 }
             }
-        });
+        });*/
 
         new GetLectureTimes(Integer.toString(courseID), this).execute();
         new CourseUsersQueryTask(courseID, this, userName, uid).execute();
@@ -171,19 +190,15 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     protected void onDestroy(){
         super.onDestroy();
 
-        LinearLayoutManager lmu = (LinearLayoutManager) userFragment.mRecyclerView.getLayoutManager();
-        LinearLayoutManager lmc = (LinearLayoutManager) contentFragment.mRecyclerView.getLayoutManager();
-
-        Log.d(Constants.DEBUG_GENERAL, "Stopping! Values for lmu: first:" + lmu.findFirstVisibleItemPosition() +
-                ", last: " + lmu.findLastVisibleItemPosition() + ". Values for lmc: first: " + lmc.findFirstVisibleItemPosition() +
-                ", last: " + lmc.findLastVisibleItemPosition());
-
         userFragment.mRecyclerViewAdapater.emptyFbLists();
         contentFragment.mRecyclerViewAdapter.emptyFbLists();
     }
 
     //TODO: change currentTimeMillis to something system-time independent
-    private void submitContent(final View view){
+    @Override
+    public void submitContent(final View view){
+
+        boolean inSubmittingPeriod = false;
 
         if(lectureTimes == null) {
             Snackbar.make(view, "Still loading", Snackbar.LENGTH_LONG)
@@ -193,21 +208,21 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
         }
 
         //if we're in range of one of the submission dates, submit
-        /*for(Date time: lectureTimes){
+        for(Date time: lectureTimes){
             //Day to millisecond conversion: http://stackoverflow.com/questions/6980376/convert-from-days-to-milliseconds
             if(time.getTime() < System.currentTimeMillis() && System.currentTimeMillis() < time.getTime()
                      + TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)){
 
                 selectedLecture = time;
-                startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                        , Constants.TAKE_PHOTO);
+                inSubmittingPeriod = true;
             }
         }
 
-        Snackbar.make(view, "Content submission closed, try again on ...", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-
-        */
+        if(!inSubmittingPeriod) {
+            Snackbar.make(view, "Content submission closed, try again later.", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            return;
+        }
 
         //check to see if we haven't submitted anything for the day
         Firebase checkSubmission = new Firebase(Constants.FIRE_BASE_URL + "/content/" + uid +
@@ -218,8 +233,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
 
                 //Empty entry ==> it's the first time this is happening
                 if (dataSnapshot.getValue() == null) {
-                    //TODO: remove after finished testing
-                    selectedLecture = lectureTimes.get(0);
+
                     startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                             , Constants.TAKE_PHOTO);
                 } else {
@@ -230,8 +244,6 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                     if (!Integer.toString(c.get(Calendar.DAY_OF_YEAR)).equals(dataSnapshot.getValue()
                             .toString())) {
 
-                        //TODO: remove after finished testing
-                        selectedLecture = lectureTimes.get(0);
                         startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                                 , Constants.TAKE_PHOTO);
                     } else {
@@ -288,18 +300,11 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                 e.printStackTrace();
             }
         }
-        else if(requestCode == Constants.BLUETOOTH_ENABLE && resultCode == AppCompatActivity.RESULT_OK){
-
-            Intent bluetoothDiscoverySettings = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            bluetoothDiscoverySettings.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0);
-            startActivityForResult(bluetoothDiscoverySettings, Constants.BLUETOOTH_MAKE_DISCOVERABLE);
-        }
         else if(requestCode == Constants.BLUETOOTH_MAKE_DISCOVERABLE && resultCode == 1){
 
-
+            HandUp.getBluetoothAdapter().setName(displayName);
 
             Bundle dialogInfo = new Bundle();
-            dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_NAME, MainActivity.getUser().getDisplayName());
             dialogInfo.putSerializable(Constants.DIALOG_BUNDLE_COURSE_ID, Integer.toString(courseID));
 
             //Taken from http://tinyurl.com/3xatjj5
@@ -368,7 +373,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                 currentTab = position;
 
                 //animate button: http://stackoverflow.com/questions/4689918/move-image-from-left-to-right-in-android
-                TranslateAnimation anim = new TranslateAnimation(0f, 0, 0, 300);
+                /*TranslateAnimation anim = new TranslateAnimation(0f, 0, 0, 300);
                 AccelerateDecelerateInterpolator adi = new AccelerateDecelerateInterpolator();
                 anim.setInterpolator(adi);
                 anim.setDuration(250);
@@ -396,7 +401,7 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
                     }
                 });
 
-                mFab.startAnimation(anim);
+                mFab.startAnimation(anim);*/
             }
 
             @Override
@@ -463,8 +468,6 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     @Override
     public void addUserToContentFeed(final String uid){
 
-        Log.d(Constants.DEBUG_GENERAL, "attemping to add content");
-
         Firebase contentRef = new Firebase(Constants.FIRE_BASE_URL + "/content/" + uid + "/" +
                 getCourseID() + "/lastContent");
         contentRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -510,8 +513,9 @@ public class CourseActivity extends AppCompatActivity implements UserFragment.Us
     ===========================================================================================*/
 
     @Override
-    public void onCourseUserQueryFinish(User u) {
+    public void onCourseUserQueryFinish(User u, boolean canStart) {
 
+        canStartLookingForOtherUsers = canStart;
         users.add(u);
         userFragment.updateUI(u);
     }

@@ -67,7 +67,7 @@ public class CourseUsersQueryTask extends AsyncTask<Void, Void, Void> {
             //====================== Get data from FireBase ======================
             Firebase ref = new Firebase("https://intense-inferno-38.firebaseio.com/users");
 
-            for(User u : users) {
+            for(final User u : users) {
 
                 Firebase userRef = ref.child(u.getUid());
 
@@ -87,7 +87,7 @@ public class CourseUsersQueryTask extends AsyncTask<Void, Void, Void> {
                                 user.setProfilePicture((String) dataSnapshot.child("profileThumb").getValue());
                             }
 
-                            cu.onCourseUserQueryFinish(user);
+                            cu.onCourseUserQueryFinish(user, u.equals(users.get(users.size() - 1)));
                         }
                     }
 
@@ -163,6 +163,6 @@ public class CourseUsersQueryTask extends AsyncTask<Void, Void, Void> {
     }
 
     public interface CourseUserQueryImplementer {
-        public void onCourseUserQueryFinish(User u);
+        public void onCourseUserQueryFinish(User u, boolean canStart);
     }
 }

@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 import com.handup.handup.R;
 import com.handup.handup.controller.course.content.ContentFragment;
@@ -84,5 +85,10 @@ public class ContentDisplay extends AppCompatActivity implements ContentPullTask
     @Override
     public Activity getActivity() {
         return null;
+    }
+
+    @Override
+    public void submitContent(View view) {
+
     }
 }

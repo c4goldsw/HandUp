@@ -2,6 +2,8 @@ package com.handup.handup.helper;
 
 import android.support.design.internal.NavigationMenu;
 
+import java.util.UUID;
+
 /**
  * Created by Christopher on 12/22/2015.  A class that is used to store constants for
  * the application.
@@ -50,7 +52,7 @@ public class Constants {
     public static final String DIALOG_BUNDLE_TITLE = "title";
     public static final String DIALOG_BUNDLE_BOOL_VAL = "BOOL_VAL";
     public static final String DIALOG_BUNDLE_UID = "uid";
-    public static final String DIALOG_BUNDLE_OID = "oid";
+    public static final String DIALOG_BUNDLE_OID = "oid"; //(Other user's ID)
     public static final String DIALOG_BUNDLE_COURSE_ID = "courseId";
 
     //CONTENT RELATED FIREBASE PATHS
@@ -66,4 +68,6 @@ public class Constants {
     public static final int BLUETOOTH_ENABLE = 89;
     public static final int BLUETOOTH_MAKE_DISCOVERABLE = 90;
     public static final String DIALOG_BUNDLE_NAME = "diaBunName";
+    public static final UUID appUuid = UUID.fromString("993eec49-a05d-4b0e-bb03-f837f8e1af1a");
+    public static final String DIALOG_BUNDLE_OTHER_USERS = "OTHER USERS";
 }

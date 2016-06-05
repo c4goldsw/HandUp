@@ -3,6 +3,7 @@ package com.handup.handup.controller.course.content;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -40,6 +41,7 @@ public class ContentFragment extends Fragment {
 
     public RecyclerView mRecyclerView;
     public MyContentRecyclerViewAdapter mRecyclerViewAdapter;
+    public FloatingActionButton mFab;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -79,23 +81,28 @@ public class ContentFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_content_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            mRecyclerView = (RecyclerView) view;
+        Context context = view.getContext();
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.list);
 
-            if (mColumnCount <= 1) {
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                GridLayoutManager m = new GridLayoutManager(context, mColumnCount);
-                mRecyclerView.setLayoutManager(m);
-            }
-
-            mRecyclerViewAdapter = new MyContentRecyclerViewAdapter(mScreenWidth, mColumnCount, true, mListener, false);
-
-            mRecyclerView.addItemDecoration(new RecyclerItemSpacing( (int) (8*mDensity), mColumnCount));
-            mRecyclerView.setAdapter(mRecyclerViewAdapter);
+        if (mColumnCount <= 1) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            GridLayoutManager m = new GridLayoutManager(context, mColumnCount);
+            mRecyclerView.setLayoutManager(m);
         }
+
+        mRecyclerViewAdapter = new MyContentRecyclerViewAdapter(mScreenWidth, mColumnCount, true, mListener, false);
+
+        mRecyclerView.addItemDecoration(new RecyclerItemSpacing( (int) (8*mDensity), mColumnCount));
+        mRecyclerView.setAdapter(mRecyclerViewAdapter);
+
+        mFab = (FloatingActionButton) view.findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.submitContent(v);
+            }
+        });
 
         return view;
     }
@@ -146,5 +153,6 @@ public class ContentFragment extends Fragment {
 
         void setContentFragment(ContentFragment contentFragment);
         Activity getActivity();
+        void submitContent(final View view);
     }
 }
